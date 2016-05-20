@@ -72,11 +72,11 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 # Global tag (MC)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '76X_mcRun2_asymptotic_v12', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_v12', '')
 
 process.demo = cms.EDAnalyzer("MakeZprimeMiniAodTree",
     #outputFile = cms.string('CMSSW763_MC_DYtoEE_6000_inf_13TeV_pattuple.root'),
-    outputFile = cms.string('CMSSW763_MC_DYtoMuMu_13TeV_pattuple200.root'), 
+    outputFile = cms.string('/nfs/dust/cms/user/sonnevej/CMSSW803_MC_DYtoMuMu_13TeV_pattuple200.root'), 
     scProducer = cms.InputTag("reducedEgamma:reducedSuperClusters"),
     vertices   = cms.InputTag("offlineSlimmedPrimaryVertices"),
     muons      = cms.InputTag("slimmedMuons"),

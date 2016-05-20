@@ -543,6 +543,40 @@ public :
    float MassCutMin,MassCutMax;
    float MassResolution;
    float EtaCut;
+
+
+   // More Histograms after each cut
+   TH1F *h1_BeforeCutsZprimeRecomassBinWidth_;
+   TH1F* h1_BeforeCutsMassResultionEBEB1_;
+   TH1F* h1_BeforeCutsMassResultionEBEB2_;
+   TH1F* h1_BeforeCutsMassResultionEBEB3_;
+   TH1F* h1_BeforeCutsMassResultionEBEB4_;
+   TH1F* h1_BeforeCutsMassResultionEBEB5_;
+   TH1F* h1_BeforeCutsMassResultionEBEB6_;
+   TH1F* h1_BeforeCutsMassResultionEBEB7_;
+   TH1F* h1_BeforeCutsMassResultionEBEB8_;
+   TH1F* h1_BeforeCutsMassResultionEBEB9_;
+   TH1F* h1_BeforeCutsMassResultionEBEB10_;
+
+   TH1F* h1_BeforeCutsZprimeRecomasslogscale_;
+   TH1F* h1_BeforeCutsMassRecoInAccep_       ;
+   TH1F* h1_BeforeCutsZprimeRecomass_        ;
+   TH1F* h1_BeforeCutsZprimeRecomass20_      ;
+   TH1F* h1_BeforeCutsZprimeRecomassBB_      ;
+   TH1F* h1_BeforeCutsZprimeRecomassEE_      ;
+   TH1F* h1_BeforeCutsZprimeRecomassBE_      ;
+   TH1F* h1_BeforeCutsZprimeRecomass50_      ;
+   TH1F* h1_BeforeCutsZprimeRecomass60to120_ ;
+   TH1F* h1_BeforeCuts3Dangle_               ;
+   TH1F* h1_BeforeCutsPtResolutionTunePMBT_  ;
+   TH1F* h1_BeforeCutsPtResolutiontuneP_     ;
+   TH1F* h1_BeforeCutsPtResolutionMBT_       ;
+   void PlotRecoInfoBeforeCuts(float CosmicMuonRejec,float vertexMassMu,float MassGenerated,
+		     float PtTunePMuBestTrack,float PtTunePMu,float PtMuBestTrack,
+		     float PtGenerated,float etaMu1,
+		     float PtTunePMuBestTrack2,float PtTunePMu2,float PtMuBestTrack2,
+		     float PtGenerated2,float etaMu2);
+
    TH1F* h1_ZprimeRecomassBeforeTrigger_;
    TH1F* h1_ZprimeRecomass_;
    TH1F* h1_ZprimeRecomasslogscale_;                                                              
@@ -654,9 +688,10 @@ ZprimeMuMuPatMiniAod::ZprimeMuMuPatMiniAod(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("CMSSW763_MC_DYtoMuMu_13TeV_pattuple200.root");
+      TString inputfile = "/nfs/dust/cms/user/sonnevej/CMSSW803_MC_DYtoMuMu_13TeV_pattuple200.root";
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(inputfile);
       if (!f || !f->IsOpen()) {
-         f = new TFile("CMSSW763_MC_DYtoMuMu_13TeV_pattuple200.root");
+         f = new TFile(inputfile);
       }
       f->GetObject("tree",tree);
 
