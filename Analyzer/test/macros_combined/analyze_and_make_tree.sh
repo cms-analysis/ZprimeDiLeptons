@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+# Run this file to analyze a given tree
+
 if [ -z "$1" ]
     then
         OUTFILENAME="CMSSW803-Analyze_ZtoMuMu_13TeV_M5000_miniaod_filledhistos.root"
