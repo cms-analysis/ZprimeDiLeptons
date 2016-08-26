@@ -56,8 +56,8 @@ void ZprimeMuMuPatMiniAod::Loop(TString outfilename )
   float ptMax = 400.0;
   ptEffCut = 3000.0;
   double muon_mass = 0.1056583;
-  weight=1.;
-  if( DATA_type=="2015") weight=1.;
+  weight=1.; // why is weight = 1.?
+  //if( DATA_type=="2015") weight=1.;
   if( !outfilename ){
       TString outfilename = "CMSSW803-Analyze_ZtoMuMu_13TeV_M5000_miniaod_filledhistos.root";
   }
@@ -303,8 +303,8 @@ void ZprimeMuMuPatMiniAod::Loop(TString outfilename )
   Long64_t nbytes = 0, nb = 0;
   // for testing:
   //
-  for (Long64_t jentry=0; jentry<100;jentry++) {
-  //for (Long64_t jentry=0; jentry<nentries;jentry++) {
+  //for (Long64_t jentry=0; jentry<100;jentry++) {
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;

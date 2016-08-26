@@ -7,17 +7,18 @@ if [ -z "$1" ]
         #exit 3
     else
         OUTFILENAME=$1
+        if [ -z "$2" ]
+            then
+                INFILENAME="/nfs/dust/cms/user/sonnevej/CMSSW803_MC_DYtoMuMu_13TeV_pattuple200.root"
+                echo $0: optional usage: $0 outputfilename inputfilename
+                #echo $0: usage: $0 outputfilename
+                #exit 3
+            else
+                INFILENAME=$2
+        fi
 fi
 
-if [ -z "$2" ]
-    then
-        INFILENAME="/nfs/dust/cms/user/sonnevej/CMSSW803_MC_DYtoMuMu_13TeV_pattuple200.root"
-        echo $0: optional usage: $0 outputfilename inputfilename
-        #echo $0: usage: $0 outputfilename
-        #exit 3
-    else
-        INFILENAME=$2
-fi
+
 
 if [[ -a $OUTFILENAME ]]
     then
@@ -34,11 +35,10 @@ export WRITE_TO_FILE=$QUOTES$OUTFILENAME$QUOTES
 export ANALYZE_FILE=$QUOTES$INFILENAME$QUOTES
 
 
-sprintf(name,${ANALYZE_FILE});
 
 root -b -l << EOF
 Char_t name[300];
-sprintf(name,"/nfs/dust/cms/user/sonnevej/CMSSW803_MC_DYtoMuMu_13TeV_pattuple200.root");
+sprintf(name,${ANALYZE_FILE});
 TFile *file0 = TFile::Open(name)
 TTree *tree3 = (TTree*)file0->Get("tree");
 .L ZprimeMuMuPatMiniAod.C+
