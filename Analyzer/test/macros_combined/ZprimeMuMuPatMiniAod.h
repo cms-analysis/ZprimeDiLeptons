@@ -36,6 +36,15 @@ using namespace std;
 class ZprimeMuMuPatMiniAod {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
+
+   // save a tree
+   TTree          *tree_; // pointer to tree before cuts
+   TTree          *tree_twomuons_;   // pointer to tree after 2mu cut
+   TTree          *tree_vtxmass_;   // pointer to tree after vtxmass cut
+   TTree          *tree_hlt_;   // pointer to tree after hlt cut
+   TTree          *tree_vtxchi2mu_;  // pointer to tree after vtxchi2mu cut
+   vector<float>   *Mu_ptTunePMuonBestTrack_;
+
    Int_t           fCurrent; //!current Tree number in a TChain
 
    // Declaration of leaf types
@@ -446,7 +455,8 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   TString outfilename;
+   virtual void     Loop(TString outfilename);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    void PrintEventInformation(int runNumber, int lumiNumber, int eventNumber,
@@ -543,40 +553,6 @@ public :
    float MassCutMin,MassCutMax;
    float MassResolution;
    float EtaCut;
-
-
-   // More Histograms after each cut
-   TH1F *h1_BeforeCutsZprimeRecomassBinWidth_;
-   TH1F* h1_BeforeCutsMassResultionEBEB1_;
-   TH1F* h1_BeforeCutsMassResultionEBEB2_;
-   TH1F* h1_BeforeCutsMassResultionEBEB3_;
-   TH1F* h1_BeforeCutsMassResultionEBEB4_;
-   TH1F* h1_BeforeCutsMassResultionEBEB5_;
-   TH1F* h1_BeforeCutsMassResultionEBEB6_;
-   TH1F* h1_BeforeCutsMassResultionEBEB7_;
-   TH1F* h1_BeforeCutsMassResultionEBEB8_;
-   TH1F* h1_BeforeCutsMassResultionEBEB9_;
-   TH1F* h1_BeforeCutsMassResultionEBEB10_;
-
-   TH1F* h1_BeforeCutsZprimeRecomasslogscale_;
-   TH1F* h1_BeforeCutsMassRecoInAccep_       ;
-   TH1F* h1_BeforeCutsZprimeRecomass_        ;
-   TH1F* h1_BeforeCutsZprimeRecomass20_      ;
-   TH1F* h1_BeforeCutsZprimeRecomassBB_      ;
-   TH1F* h1_BeforeCutsZprimeRecomassEE_      ;
-   TH1F* h1_BeforeCutsZprimeRecomassBE_      ;
-   TH1F* h1_BeforeCutsZprimeRecomass50_      ;
-   TH1F* h1_BeforeCutsZprimeRecomass60to120_ ;
-   TH1F* h1_BeforeCuts3Dangle_               ;
-   TH1F* h1_BeforeCutsPtResolutionTunePMBT_  ;
-   TH1F* h1_BeforeCutsPtResolutiontuneP_     ;
-   TH1F* h1_BeforeCutsPtResolutionMBT_       ;
-   void PlotRecoInfoBeforeCuts(float CosmicMuonRejec,float vertexMassMu,float MassGenerated,
-		     float PtTunePMuBestTrack,float PtTunePMu,float PtMuBestTrack,
-		     float PtGenerated,float etaMu1,
-		     float PtTunePMuBestTrack2,float PtTunePMu2,float PtMuBestTrack2,
-		     float PtGenerated2,float etaMu2);
-
    TH1F* h1_ZprimeRecomassBeforeTrigger_;
    TH1F* h1_ZprimeRecomass_;
    TH1F* h1_ZprimeRecomasslogscale_;                                                              

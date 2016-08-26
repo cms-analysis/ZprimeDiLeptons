@@ -30,7 +30,7 @@ bool myfunction (int i,int j) { return (i<j); }
 bool picklargemass (float lhs,float rhs) { return (lhs > rhs); }
 TString inputfile;
 
-void ZprimeMuMuPatMiniAod::Loop()
+void ZprimeMuMuPatMiniAod::Loop(TString outfilename )
 {
   time_t start,end;
   double dif;
@@ -57,9 +57,91 @@ void ZprimeMuMuPatMiniAod::Loop()
   ptEffCut = 3000.0;
   double muon_mass = 0.1056583;
   weight=1.;
-  //if( DATA_type=="2015") weight=1.;
-  TFile *output = new TFile("/afs/desy.de/user/s/sonnevej/cmsdaszprime/CMSSW_8_0_3_patch1/src/CMSSW803-Analyse_ZtoMuMu_13TeV_M5000_miniaod_more_histos.root","recreate");
+  if( DATA_type=="2015") weight=1.;
+  if( !outfilename ){
+      TString outfilename = "CMSSW803-Analyze_ZtoMuMu_13TeV_M5000_miniaod_filledhistos.root";
+  }
+  TFile *output = new TFile(outfilename,"recreate");
   //TFile *output = new TFile("CMSSW745-Analyse_ZprimeToTauTau_13TeV_50_M_3000.root","recreate");
+  //================================================================================== 
+  //                                                                                 =  
+  //            Start a tree with important observables                              =  
+  //                                                                                 =
+  //==================================================================================
+  tree_ = new TTree("before_cuts", "Store variables before cuts");
+  tree_->SetAutoSave(10000000000);
+  tree_->SetAutoFlush(1000000);
+  tree_->Branch("RunNum",&event_runNo,"RunNum/i");
+  tree_->Branch("EvtNum",&event_evtNo,"EvtNum/i");
+  tree_->Branch("weight",&weight,"weight/F");
+  tree_->Branch("Mu_ptTunePMuonBestTrack",&Mu_ptTunePMuonBestTrack);
+  tree_->Branch("Mu_absdxyTunePMuonBestTrack",&Mu_absdxyTunePMuonBestTrack);
+  tree_->Branch("Mu_dPToverPTTunePMuonBestTrack",&Mu_dPToverPTTunePMuonBestTrack);
+  tree_->Branch("Mu_trackiso",&Mu_trackiso);
+  tree_->Branch("Mu_ptInnerTrack",&Mu_ptInnerTrack);
+  tree_->Branch("Mu_numberOftrackerLayersWithMeasurement",&Mu_numberOftrackerLayersWithMeasurement);
+  tree_->Branch("Mu_numberOfValidPixelHits",&Mu_numberOfValidPixelHits);
+  tree_->Branch("Mu_numberOfMatchedStations",&Mu_numberOfMatchedStations);
+  // Tree for after the 2 muons cut
+  tree_twomuons_ = new TTree("after_twomuons_cut", "Store variables after 2 muons cut");
+  tree_twomuons_->SetAutoSave(10000000000);
+  tree_twomuons_->SetAutoFlush(1000000);
+  tree_twomuons_->Branch("RunNum",&event_runNo,"RunNum/i");
+  tree_twomuons_->Branch("EvtNum",&event_evtNo,"EvtNum/i");
+  tree_twomuons_->Branch("weight",&weight,"weight/F");
+  tree_twomuons_->Branch("Mu_ptTunePMuonBestTrack",&Mu_ptTunePMuonBestTrack);
+  tree_twomuons_->Branch("Mu_absdxyTunePMuonBestTrack",&Mu_absdxyTunePMuonBestTrack);
+  tree_twomuons_->Branch("Mu_dPToverPTTunePMuonBestTrack",&Mu_dPToverPTTunePMuonBestTrack);
+  tree_twomuons_->Branch("Mu_trackiso",&Mu_trackiso);
+  tree_twomuons_->Branch("Mu_ptInnerTrack",&Mu_ptInnerTrack);
+  tree_twomuons_->Branch("Mu_numberOftrackerLayersWithMeasurement",&Mu_numberOftrackerLayersWithMeasurement);
+  tree_twomuons_->Branch("Mu_numberOfValidPixelHits",&Mu_numberOfValidPixelHits);
+  tree_twomuons_->Branch("Mu_numberOfMatchedStations",&Mu_numberOfMatchedStations);
+  // Tree for after the vertex mass cut
+  tree_vtxmass_ = new TTree("after_vtxmass_cut", "Store variables after vtxmass< 60 cut");
+  tree_vtxmass_->SetAutoSave(10000000000);
+  tree_vtxmass_->SetAutoFlush(1000000);
+  tree_vtxmass_->Branch("RunNum",&event_runNo,"RunNum/i");
+  tree_vtxmass_->Branch("EvtNum",&event_evtNo,"EvtNum/i");
+  tree_vtxmass_->Branch("weight",&weight,"weight/F");
+  tree_vtxmass_->Branch("Mu_ptTunePMuonBestTrack",&Mu_ptTunePMuonBestTrack);
+  tree_vtxmass_->Branch("Mu_absdxyTunePMuonBestTrack",&Mu_absdxyTunePMuonBestTrack);
+  tree_vtxmass_->Branch("Mu_dPToverPTTunePMuonBestTrack",&Mu_dPToverPTTunePMuonBestTrack);
+  tree_vtxmass_->Branch("Mu_trackiso",&Mu_trackiso);
+  tree_vtxmass_->Branch("Mu_ptInnerTrack",&Mu_ptInnerTrack);
+  tree_vtxmass_->Branch("Mu_numberOftrackerLayersWithMeasurement",&Mu_numberOftrackerLayersWithMeasurement);
+  tree_vtxmass_->Branch("Mu_numberOfValidPixelHits",&Mu_numberOfValidPixelHits);
+  tree_vtxmass_->Branch("Mu_numberOfMatchedStations",&Mu_numberOfMatchedStations);
+  // Tree for after the hlt cut
+  tree_hlt_ = new TTree("after_hlt_cut", "Store variables after hlt cut");
+  tree_hlt_->SetAutoSave(10000000000);
+  tree_hlt_->SetAutoFlush(1000000);
+  tree_hlt_->Branch("RunNum",&event_runNo,"RunNum/i");
+  tree_hlt_->Branch("EvtNum",&event_evtNo,"EvtNum/i");
+  tree_hlt_->Branch("weight",&weight,"weight/F");
+  tree_hlt_->Branch("Mu_ptTunePMuonBestTrack",&Mu_ptTunePMuonBestTrack);
+  tree_hlt_->Branch("Mu_absdxyTunePMuonBestTrack",&Mu_absdxyTunePMuonBestTrack);
+  tree_hlt_->Branch("Mu_dPToverPTTunePMuonBestTrack",&Mu_dPToverPTTunePMuonBestTrack);
+  tree_hlt_->Branch("Mu_trackiso",&Mu_trackiso);
+  tree_hlt_->Branch("Mu_ptInnerTrack",&Mu_ptInnerTrack);
+  tree_hlt_->Branch("Mu_numberOftrackerLayersWithMeasurement",&Mu_numberOftrackerLayersWithMeasurement);
+  tree_hlt_->Branch("Mu_numberOfValidPixelHits",&Mu_numberOfValidPixelHits);
+  tree_hlt_->Branch("Mu_numberOfMatchedStations",&Mu_numberOfMatchedStations);
+  // Tree for after the vtxchi2mu cut
+  tree_vtxchi2mu_ = new TTree("after_vtxchi2mu_cut", "Store variables after vtxchi2mu< 20 cut");
+  tree_vtxchi2mu_->SetAutoSave(10000000000);
+  tree_vtxchi2mu_->SetAutoFlush(1000000);
+  tree_vtxchi2mu_->Branch("RunNum",&event_runNo,"RunNum/i");
+  tree_vtxchi2mu_->Branch("EvtNum",&event_evtNo,"EvtNum/i");
+  tree_vtxchi2mu_->Branch("weight",&weight,"weight/F");
+  tree_vtxchi2mu_->Branch("Mu_ptTunePMuonBestTrack",&Mu_ptTunePMuonBestTrack);
+  tree_vtxchi2mu_->Branch("Mu_absdxyTunePMuonBestTrack",&Mu_absdxyTunePMuonBestTrack);
+  tree_vtxchi2mu_->Branch("Mu_dPToverPTTunePMuonBestTrack",&Mu_dPToverPTTunePMuonBestTrack);
+  tree_vtxchi2mu_->Branch("Mu_trackiso",&Mu_trackiso);
+  tree_vtxchi2mu_->Branch("Mu_ptInnerTrack",&Mu_ptInnerTrack);
+  tree_vtxchi2mu_->Branch("Mu_numberOftrackerLayersWithMeasurement",&Mu_numberOftrackerLayersWithMeasurement);
+  tree_vtxchi2mu_->Branch("Mu_numberOfValidPixelHits",&Mu_numberOfValidPixelHits);
+  tree_vtxchi2mu_->Branch("Mu_numberOfMatchedStations",&Mu_numberOfMatchedStations);
   //================================================================================== 
   //                                                                                 =
   //             Start the histograms for CollinSoper CMF                            =
@@ -93,16 +175,6 @@ void ZprimeMuMuPatMiniAod::Loop()
   //            Start a histograms for Mass resolution                               =  
   //                                                                                 =
   //==================================================================================
-  h1_BeforeCutsMassResultionEBEB1_      = new TH1F("BeforeCutsMassResultionEBEB1","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB2_      = new TH1F("BeforeCutsMassResultionEBEB2","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB3_      = new TH1F("BeforeCutsMassResultionEBEB3","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB4_      = new TH1F("BeforeCutsMassResultionEBEB4","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB5_      = new TH1F("BeforeCutsMassResultionEBEB5","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB6_      = new TH1F("BeforeCutsMassResultionEBEB6","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB7_      = new TH1F("BeforeCutsMassResultionEBEB7","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB8_      = new TH1F("BeforeCutsMassResultionEBEB8","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB9_      = new TH1F("BeforeCutsMassResultionEBEB9","",100,-0.5,0.5);
-  h1_BeforeCutsMassResultionEBEB10_     = new TH1F("BeforeCutsMassResultionEBEB10","",100,-0.5,0.5);
   h1_MassResultionEBEB1_      = new TH1F("MassResultionEBEB1","",100,-0.5,0.5);
   h1_MassResultionEBEB2_      = new TH1F("MassResultionEBEB2","",100,-0.5,0.5);
   h1_MassResultionEBEB3_      = new TH1F("MassResultionEBEB3","",100,-0.5,0.5);
@@ -118,19 +190,6 @@ void ZprimeMuMuPatMiniAod::Loop()
   //            Start the histograms for the mass of Z                               =  
   //                                                                                 =
   //==================================================================================
-  h1_BeforeCutsZprimeRecomasslogscale_     = new TH1F("BeforeCutsZprimeRecomasslogscale","",42,log10(60.0),log10(1200.0));
-  h1_BeforeCutsMassRecoInAccep_            = new TH1F("BeforeCutsMassRecoInAccep","",58,0.0,5000.0);
-  h1_BeforeCutsZprimeRecomass_             = new TH1F("BeforeCutsZprimeRecomass","",binMass,minMass,maxMass);
-  h1_BeforeCutsZprimeRecomass20_           = new TH1F("BeforeCutsZprimeRecomass20","",50,0.0,1000.0);
-  h1_BeforeCutsZprimeRecomassBB_           = new TH1F("BeforeCutsZprimeRecomassBB","",binMass,minMass,maxMass);
-  h1_BeforeCutsZprimeRecomassEE_           = new TH1F("BeforeCutsZprimeRecomassEE","",binMass,minMass,maxMass);
-  h1_BeforeCutsZprimeRecomassBE_           = new TH1F("BeforeCutsZprimeRecomassBE","",binMass,minMass,maxMass);
-  h1_BeforeCutsZprimeRecomass50_           = new TH1F("BeforeCutsZprimeRecomass50","",20,0.0,1000.0);
-  h1_BeforeCutsZprimeRecomass60to120_      = new TH1F("BeforeCutsZprimeRecomass60to120","",binMass,minMass,maxMass);
-  h1_BeforeCuts3Dangle_                    = new TH1F("BeforeCuts3Dangle","",100,-2.0,2.0);
-  h1_BeforeCutsPtResolutionTunePMBT_       =  new TH1F("BeforeCutsPtResolutionTunePMBT","",100,-0.5,0.5);
-  h1_BeforeCutsPtResolutiontuneP_          =  new TH1F("BeforeCutsPtResolutiontuneP","",100,-0.5,0.5);
-  h1_BeforeCutsPtResolutionMBT_            =  new TH1F("BeforeCutsPtResolutionMBT","",100,-0.5,0.5);
   h1_ZprimeRecomasslogscale_     = new TH1F("ZprimeRecomasslogscale","",42,log10(60.0),log10(1200.0));
   h2_ZprimeRecomassNewbin_       = new TH2F("ZprimeRecomassNewbin","ZprimeRecomassNewbin",80,50.,1000.,500,0.001,1000.);
   h1_MassGenInAccep_             = new TH1F("MassGenInAccep","",58,0.0,5000.0);
@@ -219,14 +278,13 @@ void ZprimeMuMuPatMiniAod::Loop()
     cout << logMbins[ibin] << endl;
   }
   h1_ZprimeRecomassBinWidth_             = new TH1F("ZprimeRecomassBinWidth","ZprimeRecomassBinWidth",NMBINS, logMbins);
-  h1_BeforeCutsZprimeRecomassBinWidth_             = new TH1F("ZprimeRecomassBinWidth","ZprimeRecomassBinWidth",NMBINS, logMbins);
 
 
   // Book txt file for candidate events
   Char_t txtOUT[500];
   //sprintf(txtOUT,"%s_txt.txt",datasetName.Data());
   sprintf(txtOUT,"CMSSW745-Analyse_ZprimeToMuMu_13TeV_cand.txt");
-  //cout << "Opening a txt file with candidate events " << txtOUT << endl;
+  cout << "Opening a txt file with candidate events " << txtOUT << endl;
   //ofstream output_txt;
   output_txt.open(txtOUT);
   output_txt << "CANDIDATES Events:" << endl;
@@ -237,13 +295,16 @@ void ZprimeMuMuPatMiniAod::Loop()
 
   //TString inputfile=name; 
   //inputfile=name;     
-  //cout << "Name of the input file is= " << inputfile.Data() << endl;
+  cout << "Name of the input file is= " << inputfile.Data() << endl;
 
   //==================================================================================  
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
   Long64_t nbytes = 0, nb = 0;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+  // for testing:
+  //
+  for (Long64_t jentry=0; jentry<100;jentry++) {
+  //for (Long64_t jentry=0; jentry<nentries;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -279,8 +340,14 @@ void ZprimeMuMuPatMiniAod::Loop()
     // Calling methods to get events with 2 muons passing ID  =   
     //                                                        =
     //=========================================================
+
     plotAllHighPtMuonsID();
- 
+    // Save all vars below here in a tree!
+    // Save before any cuts:
+    tree_->Fill();
+    // See below for save after vertex mass cut
+    // Search for tree_vtxmass_
+
     bool firstMuFinal  = SelectFirstMuon(PtRecTunePMuBestTrack1,EnRecMu1,EtaRecMu1,PhiRecMu1,ChargeRecMu1,flagmu1,
 					 pxRecMu1,pyRecMu1,pzRecMu1,pRecMu1,dxyRecMu1,PtRecTunePMu1,
 					 PtRecMuBestTrack1);
@@ -298,52 +365,60 @@ void ZprimeMuMuPatMiniAod::Loop()
     //                                                        =
     //=========================================================
     //cout << "firstMu= " << firstMuFinal << " " << "secondMu= " << secondMuFinal << endl;
-    //
-    //
 
-    // Plot before cuts
-	 PlotRecoInfoBeforeCuts(CosmicRejec,vtxMassMu,MassGen,PtRecTunePMuBestTrack1,PtRecTunePMu1,PtRecMuBestTrack1,mPtGen1,EtaRecMu1,
-			 PtRecTunePMuBestTrack2,PtRecTunePMu2,PtRecMuBestTrack2,mPtGen2,EtaRecMu2);
-	    CosThetaCollinSoper(PtRecTunePMuBestTrack1,EtaRecMu1,PhiRecMu1,EnRecMu1,
-				PtRecTunePMuBestTrack2,EtaRecMu2,PhiRecMu2,EnRecMu2,
-				ChargeRecMu1,vtxMassMu);
-
-    //---------------------------------------------------------
-    //        CUT 1: two muons
-    //---------------------------------------------------------
     if(firstMuFinal == 0 || secondMuFinal == 0) continue;
-
-
+    // Fill a tree after the dimuon mass cut to see its impact
+    tree_twomuons_->Fill();
+    h1_ptHistoBefor_->Fill(PtRecTunePMu1);
+    h1_ptHistoBefor_->Fill(PtRecTunePMu2);
+    h1_etaHistoBefor_->Fill(EtaRecMu1);
+    h1_etaHistoBefor_->Fill(EtaRecMu2);
+  //================================================================================== 
     //cout << "Vertex mass mu= " << vtxMassMu << endl;
-    //---------------------------------------------------------
-    //        CUT 2: highest mu vertex mass
-    //---------------------------------------------------------
     if(vtxMassMu<60) continue; 
+    // Fill a tree after the vertex mass cut to see its impact
+    tree_vtxmass_->Fill();
+    h1_ptHistoPassingVtxChi2Mu_->Fill(PtRecTunePMu1);
+    h1_ptHistoPassingVtxChi2Mu_->Fill(PtRecTunePMu2);
     //=========================================================
     //        start doing matching between reco & HLT         =
     //                                                        =
     //=========================================================
-
-    //---------------------------------------------------------
-    //        CUT 3: high level trigger
-    //---------------------------------------------------------
     bool fireHLT2 = isPassHLT();
     if(fireHLT2 == 0) continue; 
-
+    // Fill a tree after the hlt cut to see its impact
+    tree_hlt_->Fill();
     bool RecoMuon1MatchingWithHLT1 = RecoHLTMuonMatching(EtaRecMu1,PhiRecMu1);
     bool RecoMuon2MatchingWithHLT2 = RecoHLTMuonMatching(EtaRecMu2,PhiRecMu2);
     //cout << "HLTMatching= " << RecoMuon1MatchingWithHLT1 << " " << RecoMuon2MatchingWithHLT2 << endl;
     if(RecoMuon1MatchingWithHLT1==1 || RecoMuon2MatchingWithHLT2==1)
-      {
-	//PrintEventInformation(256843,465,665539990,vtxChi2Mu,vtxMassMu,CosmicRejec);
-	if(vtxChi2Mu<20.0 && CosmicRejec>-0.9998) 
-	  {
-	    PlotRecoInfo(CosmicRejec,vtxMassMu,MassGen,PtRecTunePMuBestTrack1,PtRecTunePMu1,PtRecMuBestTrack1,mPtGen1,EtaRecMu1,
-			 PtRecTunePMuBestTrack2,PtRecTunePMu2,PtRecMuBestTrack2,mPtGen2,EtaRecMu2);
-	    CosThetaCollinSoper(PtRecTunePMuBestTrack1,EtaRecMu1,PhiRecMu1,EnRecMu1,
-				PtRecTunePMuBestTrack2,EtaRecMu2,PhiRecMu2,EnRecMu2,
-				ChargeRecMu1,vtxMassMu);
-	  }
+       {
+       h1_ptHistoPassingHLT_->Fill(PtRecTunePMu1);
+       h1_ptHistoPassingHLT_->Fill(PtRecTunePMu2);
+       h1_etaHistoPassingHLT_->Fill(EtaRecMu1);
+       h1_etaHistoPassingHLT_->Fill(EtaRecMu2);
+	    //PrintEventInformation(256843,465,665539990,vtxChi2Mu,vtxMassMu,CosmicRejec);
+       if(vtxChi2Mu<20.0)
+          {
+            // Fill a tree after the vertex mass cut to see its impact
+            tree_vtxchi2mu_->Fill();
+          h1_ptHistoPassingVtxChi2Mu_->Fill(PtRecTunePMu1);
+          h1_ptHistoPassingVtxChi2Mu_->Fill(PtRecTunePMu2);
+          h1_etaHistoPassingVtxChi2Mu_->Fill(EtaRecMu1);
+          h1_etaHistoPassingVtxChi2Mu_->Fill(EtaRecMu2);
+          if(CosmicRejec>-0.9998)
+	          {
+              h1_ptHistoPassingCosmicRejec_->Fill(PtRecTunePMu1);
+              h1_ptHistoPassingCosmicRejec_->Fill(PtRecTunePMu2);
+              h1_etaHistoPassingCosmicRejec_->Fill(EtaRecMu1);
+              h1_etaHistoPassingCosmicRejec_->Fill(EtaRecMu2);
+	           PlotRecoInfo(CosmicRejec,vtxMassMu,MassGen,PtRecTunePMuBestTrack1,PtRecTunePMu1,PtRecMuBestTrack1,mPtGen1,EtaRecMu1,
+		        PtRecTunePMuBestTrack2,PtRecTunePMu2,PtRecMuBestTrack2,mPtGen2,EtaRecMu2);
+	           CosThetaCollinSoper(PtRecTunePMuBestTrack1,EtaRecMu1,PhiRecMu1,EnRecMu1,
+		       	PtRecTunePMuBestTrack2,EtaRecMu2,PhiRecMu2,EnRecMu2,
+		       	ChargeRecMu1,vtxMassMu);
+	         }
+         }
       }
   }
   //===================================================
@@ -361,6 +436,7 @@ void ZprimeMuMuPatMiniAod::Loop()
   time (&end);
   dif = difftime (end,start);
   printf ("It took you %.2lf minutes to run your program.\n", (dif/60.0) );
+  cout << "Output written to " << outfilename << endl;
 }
 //================================================================================== 
 //                                                                                 =
@@ -498,60 +574,6 @@ bool ZprimeMuMuPatMiniAod::SelectSecondMuon(int ChargeMu1,unsigned FlagMu1,float
   }
   else return false;
 }
-void ZprimeMuMuPatMiniAod::PlotRecoInfoBeforeCuts(float CosmicMuonRejec, float vertexMassMu,float MassGenerated,
-				 float PtTunePMuBestTrack,float PtTunePMu,float PtMuBestTrack,
-				 float PtGenerated, float etaMu1,
-				 float PtTunePMuBestTrack2,float PtTunePMu2,float PtMuBestTrack2,
-				 float PtGenerated2,float etaMu2){
-  //----------------------------------------------------------
-  
-  /*
-  output_txt << event_runNo
-	     << "   " << event_lumi
-	     << "       " << event_evtNo
-	     << "        " << vertexMassMu 
-             << "        " << PtTunePMuBestTrack
-             << "        " << PtTunePMuBestTrack2
-	     << endl;
-  */
-
-  Char_t outformat[20000];
-  if (vertexMassMu>60.) sprintf (outformat,"%d %d %d %4.6f %4.2f %4.2f",
-	   event_runNo,event_lumi,event_evtNo,vertexMassMu,PtTunePMuBestTrack,PtTunePMuBestTrack2);
-
-
-  //----------------------------------------------------------
-  h1_BeforeCutsZprimeRecomasslogscale_->Fill(log10(vertexMassMu));
-  h1_BeforeCutsMassRecoInAccep_->Fill(MassGenerated,weight);
-  if (!(inputfile.Contains("WW") && vertexMassMu>2000.) ) {
-    h1_BeforeCutsZprimeRecomass_->Fill(vertexMassMu,weight);
-    h1_BeforeCutsZprimeRecomassBinWidth_->Fill(vertexMassMu,weight);
-  }
-  h1_BeforeCutsZprimeRecomass50_->Fill(vertexMassMu);
-  h1_BeforeCutsZprimeRecomass20_->Fill(vertexMassMu);
-  if(fabs(etaMu1)<1.2 && fabs(etaMu2)<1.2){h1_BeforeCutsZprimeRecomassBB_->Fill(vertexMassMu);}
-  if(fabs(etaMu1)>1.2 && fabs(etaMu2)>1.2){h1_BeforeCutsZprimeRecomassEE_->Fill(vertexMassMu);}
-  if(fabs(etaMu1)<1.2 && fabs(etaMu2)>1.2){h1_BeforeCutsZprimeRecomassBE_->Fill(vertexMassMu);}
-  if(fabs(etaMu1)>1.2 && fabs(etaMu2)<1.2){h1_BeforeCutsZprimeRecomassBE_->Fill(vertexMassMu);}
-  if(vertexMassMu>60 && vertexMassMu<120) h1_BeforeCutsZprimeRecomass60to120_->Fill(vertexMassMu);
-  h1_BeforeCuts3Dangle_->Fill(CosmicMuonRejec,weight);
-  //part for Pt resolution
-  h1_BeforeCutsPtResolutionTunePMBT_->Fill((PtTunePMuBestTrack-PtGenerated)/PtGenerated,weight);
-  h1_BeforeCutsPtResolutiontuneP_->Fill((PtTunePMu-PtGenerated)/PtGenerated,weight);
-  h1_BeforeCutsPtResolutionMBT_->Fill((PtMuBestTrack-PtGenerated)/PtGenerated,weight);
-  //part for mass resolution
-  if( vertexMassMu > 0.0 && vertexMassMu < 250.0 ){h1_BeforeCutsMassResultionEBEB1_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 250 && vertexMassMu < 750.0 ){h1_BeforeCutsMassResultionEBEB2_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 750 && vertexMassMu < 1250.0 ){h1_BeforeCutsMassResultionEBEB3_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 1250 && vertexMassMu < 1750.0 ){h1_BeforeCutsMassResultionEBEB4_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 1750 && vertexMassMu < 2250.0 ){h1_BeforeCutsMassResultionEBEB5_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 2000 && vertexMassMu < 4000.0 ){h1_BeforeCutsMassResultionEBEB6_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  if( vertexMassMu > 4000 && vertexMassMu < 6000.0 ){h1_BeforeCutsMassResultionEBEB7_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);} 
-  //if( vertexMassMu > 3250 && vertexMassMu < 3750.0 ){h1_BeforeCutsMassResultionEBEB8_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-  //if( vertexMassMu > 3750 && vertexMassMu < 4250.0 ){h1_BeforeCutsMassResultionEBEB9_->Fill((vertexMassMu-MassGenerated)/MassGenerated,weight);}
-}
-
-
 void ZprimeMuMuPatMiniAod::PlotRecoInfo(float CosmicMuonRejec, float vertexMassMu,float MassGenerated,
 				 float PtTunePMuBestTrack,float PtTunePMu,float PtMuBestTrack,
 				 float PtGenerated, float etaMu1,
