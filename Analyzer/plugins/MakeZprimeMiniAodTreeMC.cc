@@ -26,8 +26,12 @@
 #include "HEEP/VID/interface/CutNrs.h"
 #include "HEEP/VID/interface/VIDCutCodes.h"
 //new by Sherif
+// TFile Service
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TTree.h"
-#include "TFile.h"
+// #include "TTree.h"
+// #include "TFile.h"
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -204,7 +208,7 @@ private:
   int minNdof_;
   int NbGoodPv_;
   //=============================================================
-  TFile*  rootFile_;
+  // TFile*  rootFile_;
   std::string outputFile_; // output file
   //=============================================================
   //
@@ -565,9 +569,9 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   eleToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("eles"))),
   rhoToken(consumes <double> (edm::InputTag(std::string("fixedGridRhoFastjetAll")))),
   genInfoProductToken(consumes <GenEventInfoProduct> (edm::InputTag(std::string("generator")))),
-  m_passMInvCutToken(consumes<bool>(iConfig.getParameter<edm::InputTag>("passMInvCutTag"))),
-  m_passPreFSRMInvCutToken(consumes<bool>(iConfig.getParameter<edm::InputTag>("passPreFSRMInvCutTag"))),
-  m_xsWeightToken(consumes<double>(iConfig.getParameter<edm::InputTag>("xsWeightTag"))),
+  m_passMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passMInvCutTag"))),
+  m_passPreFSRMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passPreFSRMInvCutTag"))),
+  m_xsWeightToken(consumes<double,edm::InEvent>(iConfig.getParameter<edm::InputTag>("xsWeightTag"))),
   EDMGenJetsToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("JetSource"))),
   scProducer_(consumes<reco::SuperClusterCollection>(iConfig.getParameter<edm::InputTag>("scProducer"))),
   vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices"))),
@@ -592,7 +596,7 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   bDiscriminators_(iConfig.getParameter<std::vector<std::string> >("bDiscriminators")),
   outputFile_(iConfig.getParameter<std::string>("outputFile"))
 {
-  rootFile_   = TFile::Open(outputFile_.c_str(),"RECREATE"); // open output file to store histograms
+  // rootFile_   = TFile::Open(outputFile_.c_str(),"UPDATE"); // open output file to store histograms
   BosonID_            = iConfig.getParameter<int>("GenBosonID");
   ParticleID1_        = iConfig.getParameter<int>("ParticleID1");
   ParticleID2_        = iConfig.getParameter<int>("ParticleID2");
@@ -606,7 +610,7 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
 
 MakeZprimeMiniAodTreeMC::~MakeZprimeMiniAodTreeMC()
 {
-  delete rootFile_;
+  // delete rootFile_;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -614,9 +618,11 @@ void MakeZprimeMiniAodTreeMC::beginJob()
 {
 
   // go to *OUR* rootfile and book histograms
-  rootFile_->cd();
+  // rootFile_->cd();
   // Declare histograms
-  mytree  = new TTree("tree","tr");
+  edm::Service< TFileService > fs;
+  // mytree  = new TTree("tree","tr");
+  mytree  = fs->make<TTree>("tree","tr");
   //=============================================================
   //
   //           Create Branchs for Nb of event,run,lumi
@@ -997,9 +1003,9 @@ void MakeZprimeMiniAodTreeMC::analyze(const edm::Event& iEvent, const edm::Event
 void MakeZprimeMiniAodTreeMC::endJob()
 {
   // go to *OUR* root file and store histograms
-  rootFile_->cd();
-  mytree->Write();
-  rootFile_->Close();
+  // rootFile_->cd();
+  // mytree->Write();
+  // rootFile_->Close();
 }
 //define this as a plug-in
 DEFINE_FWK_MODULE(MakeZprimeMiniAodTreeMC);
@@ -1442,12 +1448,32 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
   iEvent.getByToken(m_passPreFSRMInvCutToken, h_passPreFSRMInvCut);
   iEvent.getByToken(m_xsWeightToken,          h_xsWeight);
 
-  if (h_xsWeight.isValid())
+  if (h_xsWeight.isValid()) {
     xsWeight = *h_xsWeight;
-  if (h_passPreFSRMInvCut.isValid())
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "xsWeight::" << *h_xsWeight;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to xsWeight";
+  }
+
+  if (h_passPreFSRMInvCut.isValid()) {
     passPreFSRMInvCut = *h_passPreFSRMInvCut;
-  if (h_passMInvCut.isValid())
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passPreFSRMInvCut::" << *h_passPreFSRMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passPreFSRMInvCut";
+  }
+
+  if (h_passMInvCut.isValid()) {
     passMInvCut = *h_passMInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passMInvCut::" << *h_passMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passMInvCut";
+  }
 
   // Pruned particles are the one containing "important" stuff
   Handle<edm::View<reco::GenParticle> > pruned;
