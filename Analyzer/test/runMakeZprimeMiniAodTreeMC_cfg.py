@@ -1,3 +1,4 @@
+import os,sys
 import FWCore.ParameterSet.Config as cms
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('analysis')
@@ -7,8 +8,21 @@ options.register('sampleType',
                 VarParsing.varType.string,
                 "Type of sample.")
 
-options.parseArguments()
+options.register('runCrab',
+                '',
+                VarParsing.multiplicity.singleton,
+                VarParsing.varType.bool,
+                "are we running a crab job.")
+options.register('debug',
+                '',
+                VarParsing.multiplicity.singleton,
+                VarParsing.varType.bool,
+                "add debugging.")
 
+options.parseArguments()
+if options.debug:
+    print("sampleType",options.sampleType)
+    print("runCrab",options.runCrab)
 # set up process
 process = cms.Process("HEEP")
 process.options = cms.untracked.PSet(
@@ -35,7 +49,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_Tra
 #from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
 
-from cisamples import cisamples
+from ZprimeDiLeptons.Analyzer.cisamples import cisamples
 massBins = ["M300","M800","M1300","M2000"]
 sample = options.sampleType.split('_')
 if not "ConLL" in sample[3]:
@@ -54,13 +68,14 @@ for i,b in enumerate(massBins):
 
 weight = 1
 ## for using the pickled sample information
-import cPickle as pickle
-with open("ci_xsec_data.pkl","rb") as pkl:
-    sdict = pickle.load(pkl)
+# import cPickle as pickle
+# from ZprimeDiLeptons.Analyzer.nesteddict import nesteddict
+# with open("%s/src/ZprimeDiLeptons/Analyzer/python/ci_xsec_data.pkl"%(os.getenv("CMSSW_BASE")),"rb") as pkl:
+#     sdict = pickle.load(pkl)
 ## for using the json formatted sample information
-# import json
-# with open("ci_xsec_data.json","rb") as jsn:
-#     sdict = json.load(jsn)
+import json
+with open("%s/src/ZprimeDiLeptons/Analyzer/python/ci_xsec_data.json"%(os.getenv("CMSSW_BASE")),"rb") as jsn:
+    sdict = json.load(jsn)
     # pickle dict is:
     #  DY samples:
     #     d[sample]["M%d"%(mass)]
@@ -76,7 +91,8 @@ with open("ci_xsec_data.pkl","rb") as pkl:
     sample = options.sampleType.split('_')
     if "DY" in sample[0]:
         xsdict = sdict[args.xsdict]
-        infiles = cisamples[sample[0]]["M{}".format(mass)]
+        if not options.runCrab:
+            infiles = cisamples[sample[0]]["M{}".format(mass)] ## this should be com
         outfile = '{}_M{}_MC_ntuple.root'.format(lval,mass)
     elif "CI" in sample[0]:
         special = sample[3].split("TeV")
@@ -84,18 +100,30 @@ with open("ci_xsec_data.pkl","rb") as pkl:
         infm   = special[1][:-2]
         heli   = special[1][-2:]
         mass   = sample[1][1:]
+        if options.debug:
+            print(sdict[sample[0]].keys())
+            print(sdict[sample[0]]["%s"%(lval)].keys())
         xsdict = sdict[sample[0]]["%s"%(lval)][infm][heli]["M%s"%(mass)]
         print(sample[0],"%s"%(lval),infm,heli,"M%s"%(mass))
-        infiles = cisamples[sample[0]][lval][infm][heli]["M{}".format(mass)]
+
+        if not options.runCrab:
+            if options.debug:
+                print(cisamples[sample[0]].keys())
+                print(cisamples[sample[0]]["%s"%(lval)].keys())
+            infiles = cisamples[sample[0]][lval][infm][heli]["M{}".format(mass)]
         outfile = '{}_M{}_{}{}_MC_ntuple.root'.format(lval,mass,infm,heli)
     if xsdict:
         weight = xsdict["xsec"][0]
     else:
         weight = 1.
+        infiles = None
         outfile = '{}_MC_ntuple.root'.format(options.sampleType)
     pass
 print(outfile)
 print(weight)
+
+if options.runCrab:
+    infiles = []
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
@@ -112,7 +140,7 @@ from WSUDiLeptons.GenLevelFilter.genLevelFilter_cfi import genLevelFilter
 process.genweightfilter = genLevelFilter.clone(
     filterevent  = cms.bool(False),
     filterPreFSR = cms.bool(False),
-    debug        = cms.bool(True),
+    debug        = cms.bool(False),
     minCut       = cms.double(lowerCut),
     sampleType   = cms.string(sample[0]),
     maxCut       = cms.double(upperCut),
