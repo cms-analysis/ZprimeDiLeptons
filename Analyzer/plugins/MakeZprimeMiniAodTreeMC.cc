@@ -208,7 +208,7 @@ private:
   int minNdof_;
   int NbGoodPv_;
   //=============================================================
-  // TFile*  rootFile_;
+  TFile*  rootFile_;
   std::string outputFile_; // output file
   //=============================================================
   //
@@ -596,7 +596,10 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   bDiscriminators_(iConfig.getParameter<std::vector<std::string> >("bDiscriminators")),
   outputFile_(iConfig.getParameter<std::string>("outputFile"))
 {
-  // rootFile_   = TFile::Open(outputFile_.c_str(),"UPDATE"); // open output file to store histograms
+  edm::LogWarning("MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC")
+    << "Using outputFile named" << outputFile_;
+
+  rootFile_           = TFile::Open(outputFile_.c_str(),"RECREATE"); // open output file to store histograms
   BosonID_            = iConfig.getParameter<int>("GenBosonID");
   ParticleID1_        = iConfig.getParameter<int>("ParticleID1");
   ParticleID2_        = iConfig.getParameter<int>("ParticleID2");
@@ -610,7 +613,7 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
 
 MakeZprimeMiniAodTreeMC::~MakeZprimeMiniAodTreeMC()
 {
-  // delete rootFile_;
+  delete rootFile_;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -618,11 +621,11 @@ void MakeZprimeMiniAodTreeMC::beginJob()
 {
 
   // go to *OUR* rootfile and book histograms
-  // rootFile_->cd();
-  // Declare histograms
-  edm::Service< TFileService > fs;
-  // mytree  = new TTree("tree","tr");
-  mytree  = fs->make<TTree>("tree","tr");
+  rootFile_->cd();
+  mytree  = new TTree("tree","tr");
+  // Better, use the TFileService for improved compatibility
+  // edm::Service< TFileService > fs;
+  // mytree  = fs->make<TTree>("tree","tr");
   //=============================================================
   //
   //           Create Branchs for Nb of event,run,lumi
@@ -1003,9 +1006,9 @@ void MakeZprimeMiniAodTreeMC::analyze(const edm::Event& iEvent, const edm::Event
 void MakeZprimeMiniAodTreeMC::endJob()
 {
   // go to *OUR* root file and store histograms
-  // rootFile_->cd();
-  // mytree->Write();
-  // rootFile_->Close();
+  rootFile_->cd();
+  mytree->Write();
+  rootFile_->Close();
 }
 //define this as a plug-in
 DEFINE_FWK_MODULE(MakeZprimeMiniAodTreeMC);
