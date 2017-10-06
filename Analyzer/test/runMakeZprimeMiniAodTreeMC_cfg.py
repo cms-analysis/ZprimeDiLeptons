@@ -49,7 +49,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_Tra
 #from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, '80X_dataRun2_2016SeptRepro_v7', '')
 
-from ZprimeDiLeptons.Analyzer.cisamples import cisamples
+from ZprimeDiLeptons.Analyzer.wsuciutils.cisamples import cisamples
 massBins = ["M300","M800","M1300","M2000"]
 sample = options.sampleType.split('_')
 if not "ConLL" in sample[3]:
@@ -69,12 +69,12 @@ for i,b in enumerate(massBins):
 weight = 1
 ## for using the pickled sample information
 # import cPickle as pickle
-# from ZprimeDiLeptons.Analyzer.nesteddict import nesteddict
+# from ZprimeDiLeptons.Analyzer.wsuciutils.xsec-tools.nesteddict import nesteddict
 # with open("%s/src/ZprimeDiLeptons/Analyzer/python/ci_xsec_data.pkl"%(os.getenv("CMSSW_BASE")),"rb") as pkl:
 #     sdict = pickle.load(pkl)
 ## for using the json formatted sample information
 import json
-with open("%s/src/ZprimeDiLeptons/Analyzer/python/ci_xsec_data.json"%(os.getenv("CMSSW_BASE")),"rb") as jsn:
+with open("%s/src/ZprimeDiLeptons/Analyzer/python/wsuciutils/xsec-tools/data/ci_xsec_data.json"%(os.getenv("CMSSW_BASE")),"rb") as jsn:
     sdict = json.load(jsn)
     # pickle dict is:
     #  DY samples:
