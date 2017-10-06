@@ -1,0 +1,3 @@
+[submodule "Analyzer/python/wsuciutils"]
+	path = Analyzer/python/wsuciutils
+	url = git@github.com:jsturdy/wsu-ci-analysis-tools.git
