@@ -67,5 +67,5 @@ echo "#or git clone https://github.com/cms-analysis/ZprimeDiLeptons"
 echo cd ZprimeDiLeptons
 echo git submodule init 
 echo git submodule update
-echo cd '$CMSSW_BASE'
+echo cd '$CMSSW_BASE/src'
 echo scram b -j8
