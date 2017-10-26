@@ -3,7 +3,7 @@ import os
 from ci_2mu_samples import cito2musamples
 from ci_2e_samples import cito2esamples
 
-lam  = "Lam22"
+lam  = "Lam100k"
 intf = "Con"
 heli = "LL"
 
@@ -11,9 +11,10 @@ ci_job_options = {
     "storageSite":"T3_US_FNALLPC",
     "lfnBaseDir": "/store/user/%s/CINtuples"%(os.getenv("USER")),
     "cfgFile":    "runMakeZprimeMiniAodTreeMC_cfg.py",
-    "dbs":        "global",
+    "dbs":        "phys03",
     "datasets": {
-        "MC":   list(mu for mu in cito2musamples[lam][intf][heli]) + list(e for e in cito2esamples[lam][intf][heli]),
+        # "MC":   list(mu for mu in cito2musamples[lam][intf][heli]) + list(e for e in cito2esamples[lam][intf][heli]),
+        "MC":   list(mu for mu in cito2musamples[lam][intf][heli]),
             
            ##DONE## ["/CITo2E_M1300_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v4/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
            ##DONE## ["/CITo2E_M2000_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v4/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],

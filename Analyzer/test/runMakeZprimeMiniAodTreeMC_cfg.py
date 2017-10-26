@@ -52,6 +52,30 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_Tra
 from ZprimeDiLeptons.Analyzer.wsuciutils.cisamples import cisamples
 massBins = ["M300","M800","M1300","M2000"]
 sample = options.sampleType.split('_')
+# bad, self "organized" samples
+if sample[0] == "MiniAod":
+    # prakash's samples format:
+    # MiniAod_CIToMuMu_M1300_L100K_LR_Con_Aug15
+    newsample = []
+    newsample.append("CITo2Mu") # 0
+    newsample.append(sample[2]) # 1
+    newsample.append("CUETP8M1") # 2
+    newsample.append("Lam%sTeV%s%s"%(sample[3][1:].lower(),sample[5],sample[4])) # 3
+    sample = newsample
+    pass
+elif sample[0] == "Dielectron":
+    # peter's samples format:
+    # Dielectron_100000000TeV_miniAOD_M300_RR_Des
+    newsample = []
+    newsample.append("CITo2E") # 0
+    newsample.append(sample[3]) # 1
+    newsample.append("CUETP8M1") # 2
+    newsample.append("Lam100kTeV%s%s"%(sample[5],sample[4])) # 3
+    sample = newsample
+    pass
+
+# normal good samples format:
+# CITo2E_M300_CUETP8M1_Lam34TeVConLL_13TeV_Pythia8_Corrected
 if not "ConLL" in sample[3]:
     massBins = massBins[:-1]
 lowerCut = sample[1][1:]
@@ -73,6 +97,7 @@ weight = 1
 # with open("%s/src/ZprimeDiLeptons/Analyzer/python/ci_xsec_data.pkl"%(os.getenv("CMSSW_BASE")),"rb") as pkl:
 #     sdict = pickle.load(pkl)
 ## for using the json formatted sample information
+
 import json
 with open("%s/src/ZprimeDiLeptons/Analyzer/python/wsuciutils/xsec-tools/data/ci_xsec_data.json"%(os.getenv("CMSSW_BASE")),"rb") as jsn:
     sdict = json.load(jsn)
@@ -88,7 +113,7 @@ with open("%s/src/ZprimeDiLeptons/Analyzer/python/wsuciutils/xsec-tools/data/ci_
     #  'maxCut': maxCut,
     #  'cutEfficiency': [n_pass, n_fail]
     #}
-    sample = options.sampleType.split('_')
+    # sample = options.sampleType.split('_')
     if "DY" in sample[0]:
         xsdict = sdict[args.xsdict]
         if not options.runCrab:

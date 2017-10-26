@@ -139,11 +139,21 @@ def main():
                     config.Data.lumiMask = inDS[1]
                     pass
 
-                config.JobType.pyCfgParams = ['sampleType=%s'%(inDS[0].split('/')[1]), 'runCrab=True']
+                sampleType = inDS[0].split('/')[1]
+                if sampleType == "CIToMuMuGenSim":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    pass
+                elif sampleType == "CIToDielectron_L100k":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    pass
+                config.JobType.pyCfgParams = ['sampleType=%s'%(sampleType), 'runCrab=True']
 
                 # Submit.
                 try:
                     print "Submitting for input dataset %s" % (inDS[0])
+                    # continue  ## uncomment for debugging
                     crabCommand(options.crabCmd, config = config, *options.crabCmdOpts.split())
                 except HTTPException as hte:
                     print "Submission for input dataset %s failed: %s" % (inDS[0], hte.headers)
