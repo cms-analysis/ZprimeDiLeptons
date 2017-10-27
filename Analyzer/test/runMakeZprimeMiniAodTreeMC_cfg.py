@@ -78,9 +78,9 @@ elif sample[0] == "MuMu":
     # MuMu_miniAODSIM_LRDesM1300_Use
     newsample = []
     newsample.append("CITo2Mu") # 0
-    newsample.append(sample[3]) # 1
+    newsample.append(sample[2][5:]) # 1
     newsample.append("CUETP8M1") # 2
-    newsample.append("Lam10TeV%s%s"%(sample[5],sample[4])) # 3
+    newsample.append("Lam10TeV%s%s"%(sample[2][2:5],sample[2][0:2])) # 3
     sample = newsample
     pass
 elif sample[0] == "EE":
@@ -88,9 +88,9 @@ elif sample[0] == "EE":
     # EE_miniAODSIM_LRDesM1300_remade
     newsample = []
     newsample.append("CITo2E") # 0
-    newsample.append(sample[3]) # 1
+    newsample.append(sample[2][5:]) # 1
     newsample.append("CUETP8M1") # 2
-    newsample.append("Lam10TeV%s%s"%(sample[5],sample[4])) # 3
+    newsample.append("Lam10TeV%s%s"%(sample[2][2:5],sample[2][0:2])) # 3
     sample = newsample
     pass
 
