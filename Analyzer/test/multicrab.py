@@ -68,7 +68,7 @@ def getOptions():
 
 
 def main():
-    from ci_driver import ci_job_options as driver
+    from ci_driver import ciDriver
     options = getOptions()
 
     # The submit command needs special treatment.
@@ -81,11 +81,15 @@ def main():
         config = config()
 
         config.General.requestName     = None
-        config.General.workArea        = options.workArea
+        config.General.workArea        = options.workArea.replace("-","",100)
         config.General.transferOutputs = True
         config.General.transferLogs    = False
 
         config.JobType.pluginName = 'Analysis'
+
+        driverOptions = options.workArea.split('-')
+        cidriver      = ciDriver(*driverOptions)
+        driver = cidriver.getJobOptions()
 
         config.Data.inputDBS         = driver["dbs"]
         config.Data.inputDataset     = None
