@@ -73,6 +73,26 @@ elif sample[0] == "Dielectron":
     newsample.append("Lam100kTeV%s%s"%(sample[5],sample[4])) # 3
     sample = newsample
     pass
+elif sample[0] == "MuMu":
+    # Shawn's samples format
+    # MuMu_miniAODSIM_LRDesM1300_Use
+    newsample = []
+    newsample.append("CITo2Mu") # 0
+    newsample.append(sample[2][5:]) # 1
+    newsample.append("CUETP8M1") # 2
+    newsample.append("Lam10TeV%s%s"%(sample[2][2:5],sample[2][0:2])) # 3
+    sample = newsample
+    pass
+elif sample[0] == "EE":
+    # Shawn's samples format
+    # EE_miniAODSIM_LRDesM1300_remade
+    newsample = []
+    newsample.append("CITo2E") # 0
+    newsample.append(sample[2][5:]) # 1
+    newsample.append("CUETP8M1") # 2
+    newsample.append("Lam10TeV%s%s"%(sample[2][2:5],sample[2][0:2])) # 3
+    sample = newsample
+    pass
 
 # normal good samples format:
 # CITo2E_M300_CUETP8M1_Lam34TeVConLL_13TeV_Pythia8_Corrected

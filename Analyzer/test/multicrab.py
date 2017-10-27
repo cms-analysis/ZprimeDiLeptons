@@ -68,7 +68,7 @@ def getOptions():
 
 
 def main():
-    from ci_driver import ci_job_options as driver
+    from ci_driver import ciDriver
     options = getOptions()
 
     # The submit command needs special treatment.
@@ -81,11 +81,15 @@ def main():
         config = config()
 
         config.General.requestName     = None
-        config.General.workArea        = options.workArea
+        config.General.workArea        = options.workArea.replace("-","",100)
         config.General.transferOutputs = True
         config.General.transferLogs    = False
 
         config.JobType.pluginName = 'Analysis'
+
+        driverOptions = options.workArea.split('-')
+        cidriver      = ciDriver(*driverOptions)
+        driver = cidriver.getJobOptions()
 
         config.Data.inputDBS         = driver["dbs"]
         config.Data.inputDataset     = None
@@ -131,8 +135,6 @@ def main():
                 else:
                     config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[1])
                     pass
-                print config.General.workArea
-                print config.General.requestName
                 config.Data.inputDataset = inDS[0]
                 config.Data.outputDatasetTag = '{}_{}'.format(config.General.workArea, config.General.requestName)
                 if key == 'DATA':
@@ -142,13 +144,28 @@ def main():
                 sampleType = inDS[0].split('/')[1]
                 if sampleType == "CIToMuMuGenSim":
                     sampleType = inDS[0].split('/')[2].split('-')[1]
-                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
                     pass
                 elif sampleType == "CIToDielectron_L100k":
                     sampleType = inDS[0].split('/')[2].split('-')[1]
-                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType == "CITo2Mu_GENSIM":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType == "CITo2E_GENSIM_Lam10":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType.find("Corrected-v3") > 0:
+                    sampleType = sampleType.replace("Lam16","Lam1",100)
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
                     pass
                 config.JobType.pyCfgParams = ['sampleType=%s'%(sampleType), 'runCrab=True']
+
+                print config.General.workArea
+                print config.General.requestName
 
                 # Submit.
                 try:
