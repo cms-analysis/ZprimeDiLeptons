@@ -146,11 +146,23 @@ def main():
                 sampleType = inDS[0].split('/')[1]
                 if sampleType == "CIToMuMuGenSim":
                     sampleType = inDS[0].split('/')[2].split('-')[1]
-                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
                     pass
                 elif sampleType == "CIToDielectron_L100k":
                     sampleType = inDS[0].split('/')[2].split('-')[1]
-                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[2].split('-')[1])
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType == "CITo2Mu_GENSIM":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType == "CITo2E_GENSIM_Lam10":
+                    sampleType = inDS[0].split('/')[2].split('-')[1]
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
+                    pass
+                elif sampleType.find("Corrected-v3") > 0:
+                    sampleType = sampleType.replace("Lam16","Lam1",100)
+                    config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
                     pass
                 config.JobType.pyCfgParams = ['sampleType=%s'%(sampleType), 'runCrab=True']
 
