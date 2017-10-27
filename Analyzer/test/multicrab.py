@@ -135,8 +135,6 @@ def main():
                 else:
                     config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,inDS[0].split('/')[1])
                     pass
-                print config.General.workArea
-                print config.General.requestName
                 config.Data.inputDataset = inDS[0]
                 config.Data.outputDatasetTag = '{}_{}'.format(config.General.workArea, config.General.requestName)
                 if key == 'DATA':
@@ -165,6 +163,9 @@ def main():
                     config.General.requestName = "{}_{}_{}".format(getUsernameFromSiteDB(),options.workArea,sampleType)
                     pass
                 config.JobType.pyCfgParams = ['sampleType=%s'%(sampleType), 'runCrab=True']
+
+                print config.General.workArea
+                print config.General.requestName
 
                 # Submit.
                 try:
