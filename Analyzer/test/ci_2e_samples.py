@@ -1,4 +1,78 @@
 cito2esamples = {
+    "Lam1": {
+        "Con": {
+            "LR": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVConLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVConLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVConLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            "LL": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M2000_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVConLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            "RR": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVConRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVConRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVConRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            },
+        "Des": {
+            "LR": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVDesLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVDesLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVDesLR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            "LL": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVDesLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVDesLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVDesLL_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            "RR": [
+                ["/CITo2E_M1300_CUETP8M1_Lam16TeVDesRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M300_CUETP8M1_Lam16TeVDesRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ["/CITo2E_M800_CUETP8M1_Lam16TeVDesRR_13TeV_Pythia8_Corrected-v3/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM", None],
+                ],
+            },
+        },
+    "Lam10": {
+        "Con": {
+            "LR": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRConM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRConM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRConM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            "LL": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLConM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLConM2000_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLConM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLConM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            "RR": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRConM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRConM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRConM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            },
+        "Des": {
+            "LR": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRDesM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRDesM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LRDesM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            "LL": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLDesM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLDesM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_LLDesM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            "RR": [
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRDesM1300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRDesM300_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CITo2E_GENSIM_Lam10/szaleski-EE_miniAODSIM_RRDesM800_remade-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ],
+            },
+        },
     "Lam16": {
         "Con": {
             "LR": [
