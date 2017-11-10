@@ -247,8 +247,8 @@ cito2musamples = {
                 ["/CIToMuMuGenSim/pthapa-MiniAod_CIToMuMu_M800_L100K_LR_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
                 ],
             "LL": [
-                # ["/CIToMuMuGenSim/pthapa-MiniAod_CIToMuMu_M1300_L100K_LL_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
-                # ["/CIToMuMuGenSim/pthapa-MiniAod_CIToMuMu_M300_L100K_LL_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CIToMuMuGenSim/pthapa-MiniAod_CIToMuMu_M1300_L100K_LL_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CIToMuMuGenSim/pthapa-MiniAod_CIToMuMu_M300_L100K_LL_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
                 ["/CIToMuMuGenSim/pthapa-crabConfig_MiniAod_CIToMuMu_M800_L100K_LL_Des_Aug15-28028af67189b3de7224b79195bd0e1d/USER", None],
                 ],
             "RR": [

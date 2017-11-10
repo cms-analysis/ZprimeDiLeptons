@@ -247,9 +247,9 @@ cito2esamples = {
                 ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M800_LR_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
                 ],
             "LL": [
-                # ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M1300_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
-                # ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M300_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
-                # ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M800_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M1300_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M300_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
+                ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M800_LL_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
                 ],
             "RR": [
                 ["/CIToDielectron_L100k/pdong-Dielectron_100000000TeV_miniAOD_M1300_RR_Des-28028af67189b3de7224b79195bd0e1d/USER", None],
