@@ -53,9 +53,15 @@ from ZprimeDiLeptons.Analyzer.wsuciutils.cisamples import cisamples
 massBins = ["M300","M800","M1300","M2000"]
 sample = options.sampleType.split('_')
 # bad, self "organized" samples
-if sample[0] == "MiniAod":
+if sample[0] == "MiniAod" or sample[0] == "crabConfig":
     # prakash's samples format:
     # MiniAod_CIToMuMu_M1300_L100K_LR_Con_Aug15
+    # OR
+    # crabConfig_MiniAod_CIToMuMu_M1300_L100K_LR_Con_Aug15
+    try:
+        sample.remove("crabConfig")
+    except ValueError as e:
+        pass
     newsample = []
     newsample.append("CITo2Mu") # 0
     newsample.append(sample[2]) # 1
