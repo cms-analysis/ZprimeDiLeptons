@@ -50,7 +50,7 @@ class ciDriver:
 
         ci_job_options = {
             "storageSite":"T3_US_FNALLPC",
-            "lfnBaseDir": "/store/user/%s/CINtuples"%(os.getenv("USER")),
+            "lfnBaseDir": "/store/user/%s/CINtuples_Dec15"%(os.getenv("USER")),
             "cfgFile":    "runMakeZprimeMiniAodTreeMC_cfg.py",
             "dbs":        self.dbs,
             "datasets": {
