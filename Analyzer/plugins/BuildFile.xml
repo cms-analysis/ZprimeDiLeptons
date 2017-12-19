@@ -1,5 +1,9 @@
 <export>
 </export>
 <library   name="ZprimeDiLeptons_Analyzer_plugins" file="*.cc">
+  <flags CXXFLAGS="-O0 -g3 -fno-inline"/>
+  <flags CXX_FLAGS="-O0 -g3 -fno-inline"/>
+  <use   name="root"/>
+  <use   name="FWCore/ServiceRegistry"/>
   <use   name="ZprimeDiLeptons/Analyzer"/>
 </library>

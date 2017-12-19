@@ -10,7 +10,7 @@
 //corresponds to which which cutnr
 //this is fixed for a given ID (and can be different for each ID)
 //hence its hard coded
-//also these headerfiles are intentionally completely standalone 
+//also these headerfiles are intentionally completely standalone
 //so you can easily include them in your analysis if you find them
 //useful
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -26,8 +26,12 @@
 #include "HEEP/VID/interface/CutNrs.h"
 #include "HEEP/VID/interface/VIDCutCodes.h"
 //new by Sherif
+// TFile Service
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TTree.h"
-#include "TFile.h"
+// #include "TTree.h"
+// #include "TFile.h"
 using namespace std;
 using namespace edm;
 using namespace reco;
@@ -77,7 +81,7 @@ using namespace pat;
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"    
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/Common/interface/RefCore.h"
@@ -139,7 +143,7 @@ public:
   static void globalEndJob(const NrPassFail* nrPassFail) {
     std::cout <<"nr eles pass "<<nrPassFail->nrPass<<" / "<<nrPassFail->nrPass+nrPassFail->nrFail<<std::endl;
   }
-  void PatElectronTree(const edm::Event& iEvent,const edm::EventSetup& es);  
+  void PatElectronTree(const edm::Event& iEvent,const edm::EventSetup& es);
   void TriggerMatchingTree(const edm::Event& iEvent,const edm::EventSetup& es);
   bool isAncestor(const reco::Candidate * ancestor, const reco::Candidate * particle);
   void accessGenInfo(const edm::Event& iEvent,const edm::EventSetup& es);
@@ -160,17 +164,19 @@ public:
   void fillRho(const edm::Event& evt);
   void BtaggingTree(const edm::Event& iEvent);
   void TauTree(const edm::Event& iEvent);
-  
+
 private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void beginJob() override;
   virtual void endJob() override;
-  TTree* mytree;  
+  TTree* mytree;
   edm::EDGetTokenT<edm::View<pat::Electron> > eleToken_;
   // ----------member data ---------------------------   //
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoProductToken;
-  edm::EDGetTokenT<reco::GenJetCollection> EDMGenJetsToken_; 
+  edm::EDGetTokenT<bool>   m_passMInvCutToken, m_passPreFSRMInvCutToken, m_passST1MInvCutToken, m_passST23MInvCutToken, m_passHSMInvCutToken;
+  edm::EDGetTokenT<double> m_xsWeightToken;
+  edm::EDGetTokenT<reco::GenJetCollection> EDMGenJetsToken_;
   edm::EDGetTokenT<reco::SuperClusterCollection> scProducer_;
   edm::EDGetTokenT<reco::VertexCollection> vtxToken_;
   edm::EDGetTokenT<pat::MuonCollection> muonToken_;
@@ -238,7 +244,7 @@ private:
   std::vector<float> Ele_phiTrack;
   std::vector<float> Ele_hadronicOverEm;
   std::vector<float> Ele_deltaEtaInSeedCluster;
-  std::vector<float> Ele_deltaPhiInSeedCluster;      
+  std::vector<float> Ele_deltaPhiInSeedCluster;
   std::vector<float> Ele_deltaEtaInSC;
   std::vector<float> Ele_deltaPhiInSC;
   std::vector<float> Ele_sigmaIetaIeta;
@@ -283,7 +289,7 @@ private:
   std::vector<float> Ele_hcalDepth2OverEcal;
   std::vector<float> Ele_dr03HcalDepth2TowerSumEt;
   std::vector<float> Ele_hcalDepth2TowerSumEtNoVeto;
-  std::vector<float> Ele_hcalDepth1TowerSumEtNoVeto;                       
+  std::vector<float> Ele_hcalDepth1TowerSumEtNoVeto;
   //------------- PF isolation from pat::ele -------------------------
   std::vector<float> Ele_pfSumPhotonEt;
   std::vector<float> Ele_pfSumChargedHadronPt;
@@ -361,7 +367,7 @@ private:
   std::vector<int>   Tau_id;
   std::vector<float> Tau_LooseCombinedIsolationDeltaBetaCorr3Hits;
   //=============================================================
-  //                   
+  //
   //           Create Branchs for PileUp tree
   //
   //=============================================================
@@ -369,13 +375,13 @@ private:
   int PU_BunchCrossing;
   int num_PU_gen_vertices;
   //=============================================================
-  //                   
+  //
   //           Create Branch for Rho
   //
   //=============================================================
   float Rho;
   //=============================================================
-  //                   
+  //
   //           Create Branch for events reweighting
   //
   //=============================================================
@@ -387,7 +393,7 @@ private:
   //===================================================
   std::vector<int> iGen;
   std::vector<int> idGen;
-  std::vector<int> statusGen; 
+  std::vector<int> statusGen;
   std::vector<float> ptGen;
   std::vector<float> etaGen;
   std::vector<float> phiGen;
@@ -407,6 +413,17 @@ private:
   std::vector<float> McZpy;
   std::vector<float> McZpz;
   std::vector<float> McZen;
+  //=============================================================
+  //
+  //           Create tree variables for extra GEN level info
+  //
+  //=============================================================
+  double xsWeight;
+  bool   passPreFSRMInvCut;
+  bool   passMInvCut;
+  bool   passST1MInvCut;
+  bool   passST23MInvCut;
+  bool   passHSMInvCut;
   //==================================================
   //
   //           Create vectors for Muons variables
@@ -427,7 +444,7 @@ private:
   std::vector<float> Mu_eta;
   std::vector<float> Mu_phi;
   std::vector<float> Mu_et;
-  std::vector<float> Mu_charge;      
+  std::vector<float> Mu_charge;
   std::vector<float> Mu_normalizedChi2;
   std::vector<float> Mu_trackiso;
   std::vector<int> Mu_numberOfMatchedStations;
@@ -480,7 +497,7 @@ private:
   std::vector<int> Mu_stationMask;
   std::vector<int> Mu_numberOfMatchedRPCLayers;
   //=============================================================
-  //                   
+  //
   //           Create Branches for PF MET
   //
   //=============================================================
@@ -498,7 +515,7 @@ private:
   double PFMet_pt_uncor;
   double PFMet_phi_uncor;
   double PFMet_sumEt_uncor;
-  //The raw calo ETmiss  
+  //The raw calo ETmiss
   double CaloMet_pt;
   double CaloMet_phi;
   double CaloMet_sumEt;
@@ -510,8 +527,8 @@ private:
   double pfMETshiftedPtJetEnDn;
   double pfMETshiftedPtEleEnUp;
   double pfMETshiftedPtEleEnDn;
-  double pfMETshiftedPtMuEnUp; 
-  double pfMETshiftedPtMuEnDn; 
+  double pfMETshiftedPtMuEnUp;
+  double pfMETshiftedPtMuEnDn;
   double pfMETshiftedPtJetResUp;
   double pfMETshiftedPtJetResDn;
   double pfMETshiftedPtUnclEnUp;
@@ -520,7 +537,7 @@ private:
   double pfMETshiftedPtPhoEnDn;
   //double pfMETshiftedPtJetEnUpSmear;
   //double pfMETshiftedPtJetEnDnSmear;
-  //double pfMETUncertaintySize;      
+  //double pfMETUncertaintySize;
   //double pfMETFullUncertaintySize;
   //===================================================
   //
@@ -555,6 +572,12 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   eleToken_(consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>("eles"))),
   rhoToken(consumes <double> (edm::InputTag(std::string("fixedGridRhoFastjetAll")))),
   genInfoProductToken(consumes <GenEventInfoProduct> (edm::InputTag(std::string("generator")))),
+  m_passMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passMInvCutTag"))),
+  m_passPreFSRMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passPreFSRMInvCutTag"))),
+  m_passST1MInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passST1MInvCutTag"))),
+  m_passST23MInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passST23MInvCutTag"))),
+  m_passHSMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passHSMInvCutTag"))),
+  m_xsWeightToken(consumes<double,edm::InEvent>(iConfig.getParameter<edm::InputTag>("xsWeightTag"))),
   EDMGenJetsToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("JetSource"))),
   scProducer_(consumes<reco::SuperClusterCollection>(iConfig.getParameter<edm::InputTag>("scProducer"))),
   vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertices"))),
@@ -579,7 +602,10 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   bDiscriminators_(iConfig.getParameter<std::vector<std::string> >("bDiscriminators")),
   outputFile_(iConfig.getParameter<std::string>("outputFile"))
 {
-  rootFile_   = TFile::Open(outputFile_.c_str(),"RECREATE"); // open output file to store histograms  
+  edm::LogWarning("MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC")
+    << "Using outputFile named" << outputFile_;
+
+  rootFile_           = TFile::Open(outputFile_.c_str(),"RECREATE"); // open output file to store histograms
   BosonID_            = iConfig.getParameter<int>("GenBosonID");
   ParticleID1_        = iConfig.getParameter<int>("ParticleID1");
   ParticleID2_        = iConfig.getParameter<int>("ParticleID2");
@@ -599,11 +625,13 @@ MakeZprimeMiniAodTreeMC::~MakeZprimeMiniAodTreeMC()
 // ------------ method called once each job just before starting event loop  ------------
 void MakeZprimeMiniAodTreeMC::beginJob()
 {
-  
+
   // go to *OUR* rootfile and book histograms
   rootFile_->cd();
-  // Declare histograms
   mytree  = new TTree("tree","tr");
+  // Better, use the TFileService for improved compatibility
+  // edm::Service< TFileService > fs;
+  // mytree  = fs->make<TTree>("tree","tr");
   //=============================================================
   //
   //           Create Branchs for Nb of event,run,lumi
@@ -697,11 +725,11 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("Ele_dr03TkSumPt_corrected",&Ele_dr03TkSumPt_corrected);
   mytree->Branch("Ele_nrSatCrys",&Ele_nrSatCrys);
   mytree->Branch("Ele_isPassHeepID",&Ele_isPassHeepID);
-  //============================================================= 
+  //=============================================================
   //
   //           Create Branchs for Muons match HLT variables
   //
-  //=============================================================  
+  //=============================================================
   mytree->Branch("HLT_nb", &HLT_nb);
   mytree->Branch("HLT_name", &HLT_name);
   mytree->Branch("HLT_isaccept", &HLT_isaccept);
@@ -738,9 +766,20 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("pxGen",&pxGen);
   mytree->Branch("pyGen",&pyGen);
   mytree->Branch("pzGen",&pzGen);
-  //=============================================================  
+  //=============================================================
   //
-  //           Create Branchs for Muons variables 
+  //           Create Branches GEN level info
+  //
+  //=============================================================
+  mytree->Branch("xsWeight",         &xsWeight);
+  mytree->Branch("passPreFSRMInvCut",&passPreFSRMInvCut);
+  mytree->Branch("passMInvCut",      &passMInvCut);
+  mytree->Branch("passST1MInvCut",&passST1MInvCut);
+  mytree->Branch("passST23MInvCut",&passST23MInvCut);
+  mytree->Branch("passHSMInvCut",&passHSMInvCut);
+  //=============================================================
+  //
+  //           Create Branchs for Muons variables
   //
   //=============================================================
   mytree->Branch("Mu_nbMuon",&Mu_nbMuon);
@@ -807,7 +846,7 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("Mu_vtxNormChi30GeV",&Mu_vtxNormChi30GeV);
   mytree->Branch("Mu_vtxMass30GeVLept",&Mu_vtxMass30GeVLept);
   //=============================================================
-  //                   
+  //
   //           Create Branches for PF MET
   //
   //=============================================================
@@ -821,7 +860,7 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("PFMet_py_cor",   &PFMet_py_cor,   "PFMet_py_cor/D");
   mytree->Branch("PFMet_pz_cor",   &PFMet_pz_cor,   "PFMet_pz_cor/D");
   mytree->Branch("PFMet_sumEt_cor",&PFMet_sumEt_cor,"PFMet_sumEt_cor/D");
-  //The raw calo ETmiss  
+  //The raw calo ETmiss
   mytree->Branch("CaloMet_pt",   &CaloMet_pt,   "CaloMet_pt/D");
   mytree->Branch("CaloMet_phi",  &CaloMet_phi,  "CaloMet_phi/D");
   mytree->Branch("CaloMet_sumEt",&CaloMet_sumEt,"CaloMet_sumEt/D");
@@ -832,7 +871,7 @@ void MakeZprimeMiniAodTreeMC::beginJob()
     mytree->Branch("PFMet_phi_uncor",  &PFMet_phi_uncor,  "PFMet_phi_uncor/D");
     mytree->Branch("PFMet_sumEt_uncor",&PFMet_sumEt_uncor,"PFMet_sumEt_uncor/D");*/
   //mytree->Branch("METSign",&METSign,"METSign/D");
-  
+
   //Type I MET Uncertainties
   mytree->Branch("PFMet_METshiftedPtJetEnUp",  &pfMETshiftedPtJetEnUp,  "PFMet_METshiftedPtJetEnUp/D");
   mytree->Branch("PFMet_METshiftedPtJetEnDn",  &pfMETshiftedPtJetEnDn,  "PFMet_METshiftedPtJetEnDn/D");
@@ -852,9 +891,9 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   //mytree->Branch("PFMet_METFullUncertaintySize",    &pfMETFullUncertaintySize,  "PFMet_METFullUncertaintySize/D");
   //=============================================================
   //
-  // Create Branches for jets variables 
+  // Create Branches for jets variables
   //
-  //============================================================= 
+  //=============================================================
   mytree->Branch("jet_nb",&jet_nb);
   mytree->Branch("jet_charge",&jet_charge);
   mytree->Branch("jet_et",&jet_et);
@@ -867,9 +906,9 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("jet_pileup_mva_disc",&jet_pileup_mva_disc);
   //=============================================================
   //
-  // Create Branches for Btagging variables 
+  // Create Branches for Btagging variables
   //
-  //============================================================= 
+  //=============================================================
   mytree->Branch("Nb_bDiscriminators",&Nb_bDiscriminators);
   mytree->Branch("jet_btag_pt",&jet_btag_pt);
   mytree->Branch("jet_btag_eta",&jet_btag_eta);
@@ -903,21 +942,21 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   //mytree->Branch("pfphoton_PFPUchAllPart",&pfphoton_PFPUchAllPart);
   //mytree->Branch("pfphoton_pfphoton_PFX_rho",&pfphoton_pfphoton_PFX_rho);
   //=============================================================
-  //                   
-  //           Create Branchs for PileUp tree  
+  //
+  //           Create Branchs for PileUp tree
   //
   //=============================================================
   mytree->Branch("num_PU_vertices",&num_PU_vertices,"num_PU_vertices/I");
   mytree->Branch("PU_BunchCrossing",&PU_BunchCrossing,"PU_BunchCrossing/I");
   mytree->Branch("num_PU_gen_vertices",&num_PU_gen_vertices,"num_PU_gen_vertices/I");
   //=============================================================
-  //                   
+  //
   //           Create Branch for Rho
   //
   //=============================================================
   mytree->Branch("Rho",&Rho,"Rho/F");
   //=============================================================
-  //                   
+  //
   //           Create Branch for events reweighting
   //
   //=============================================================
@@ -940,7 +979,7 @@ void MakeZprimeMiniAodTreeMC::analyze(const edm::Event& iEvent, const edm::Event
 {
   //==============================================
   //=        Begin of the main program           =
-  //============================================== 
+  //==============================================
   Run   = (unsigned int) iEvent.id().run();
   Event = (unsigned int) iEvent.id().event();
   lumi  = (unsigned int) iEvent.luminosityBlock();
@@ -954,11 +993,11 @@ void MakeZprimeMiniAodTreeMC::analyze(const edm::Event& iEvent, const edm::Event
   if( GoodPv == 0 ) return; //the aim of that command is to select only events*/
   PatElectronTree(iEvent,iSetup);
   PatMuonTree(iEvent,iSetup);
-  TriggerMatchingTree(iEvent,iSetup); 
+  TriggerMatchingTree(iEvent,iSetup);
   ComputeMuonMassVtx(iEvent,iSetup);
   ComputeMuonMassVtx30GeV(iEvent,iSetup);
   accessGenInfo(iEvent,iSetup);
-  fillMET(iEvent);  
+  fillMET(iEvent);
   JetsTree(iEvent,iSetup);
   GenJetTree(iEvent);
   ParticleFlowPhotonTree(iEvent,iSetup);
@@ -969,11 +1008,11 @@ void MakeZprimeMiniAodTreeMC::analyze(const edm::Event& iEvent, const edm::Event
   TauTree(iEvent);
   //==============================================
   //=        End of the main program             =
-  //============================================== 
+  //==============================================
   mytree->Fill();
 }
 // ------------ method called once each job just after ending the event loop  ------------
-void MakeZprimeMiniAodTreeMC::endJob() 
+void MakeZprimeMiniAodTreeMC::endJob()
 {
   // go to *OUR* root file and store histograms
   rootFile_->cd();
@@ -1011,7 +1050,7 @@ bool MakeZprimeMiniAodTreeMC::PrimaryVertex(const reco::VertexCollection &vertic
 //
 //=============================================================
 void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm::EventSetup& es)
-{ 
+{
   unsigned int NbElectrons = -1 ;
   Ele_nbElectrons.clear();
   Ele_dr03TkSumPt.clear();
@@ -1035,7 +1074,7 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
   Ele_phiTrack.clear();
   Ele_hadronicOverEm.clear();
   Ele_deltaEtaInSeedCluster.clear();
-  Ele_deltaPhiInSeedCluster.clear();      
+  Ele_deltaPhiInSeedCluster.clear();
   Ele_deltaEtaInSC.clear();
   Ele_deltaPhiInSC.clear();
   Ele_sigmaIetaIeta.clear();
@@ -1077,7 +1116,7 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
   Ele_hcalDepth2OverEcal.clear();
   Ele_dr03HcalDepth2TowerSumEt.clear();
   Ele_hcalDepth2TowerSumEtNoVeto.clear();
-  Ele_hcalDepth1TowerSumEtNoVeto.clear();                       
+  Ele_hcalDepth1TowerSumEtNoVeto.clear();
   Ele_pfSumPhotonEt.clear();
   Ele_pfSumChargedHadronPt.clear();
   Ele_pfSumNeutralHadronEt.clear();
@@ -1105,17 +1144,17 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
   //------------ Rec Hits in EB ----------------
   edm::Handle<EcalRecHitCollection> ecalEB;
   iEvent.getByToken(tok_EB_,ecalEB);
-  //------------ Rec Hits in EE ----------------  
+  //------------ Rec Hits in EE ----------------
   edm::Handle<EcalRecHitCollection> ecalEE;
   iEvent.getByToken(tok_EE_,ecalEE);
   std::auto_ptr<EcalClusterLazyTools> lazyTools_;
-  lazyTools_ .reset(new EcalClusterLazyTools( iEvent, es, ecalRechitEBToken_, ecalRechitEEToken_ ));  
+  lazyTools_ .reset(new EcalClusterLazyTools( iEvent, es, ecalRechitEBToken_, ecalRechitEEToken_ ));
   edm::Handle<edm::View<pat::Electron> > eleHandle;
   iEvent.getByToken(eleToken_,eleHandle);
   for(auto& el : *eleHandle){
     if(el.caloEnergy() * sin(el.p4().theta()) < 20) continue;
     NbElectrons++;
-    Ele_nbElectrons.push_back(NbElectrons); 
+    Ele_nbElectrons.push_back(NbElectrons);
     Ele_Et.push_back(el.superCluster()->energy() * sin(el.p4().theta()));
     Ele_EtFromCaloEn.push_back(el.caloEnergy() * sin(el.p4().theta()));
     //================================================================
@@ -1140,14 +1179,14 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
     // End New piece of code by Sam
     //
     //================================================================
-    Ele_pt.push_back(el.pt()); 
+    Ele_pt.push_back(el.pt());
     Ele_thetaSC.push_back(el.caloPosition().theta()); //theta SC
     Ele_etaSC.push_back(el.superCluster()->eta());    //eta SC
     Ele_phiSC.push_back(el.superCluster()->phi());    //phi SC
-    Ele_phiWidth.push_back(el.superCluster()->phiWidth()); 
-    Ele_etaWidth.push_back(el.superCluster()->etaWidth()); 
+    Ele_phiWidth.push_back(el.superCluster()->phiWidth());
+    Ele_etaWidth.push_back(el.superCluster()->etaWidth());
     Ele_energySC.push_back(el.superCluster()->energy()); //energy SC
-    Ele_preshowerEnergySC.push_back(el.superCluster()->preshowerEnergy()); 
+    Ele_preshowerEnergySC.push_back(el.superCluster()->preshowerEnergy());
     Ele_thetaTrack.push_back(el.p4().theta()); //theta track
     Ele_etaTrack.push_back(el.p4().eta());     //eta track
     Ele_phiTrack.push_back(el.p4().phi());     //phi track
@@ -1168,7 +1207,7 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
     Ele_e5x5.push_back(el.e5x5());
     Ele_e2x5MaxOver5x5.push_back(el.e2x5Max()/el.e5x5());
     Ele_e1x5Over5x5.push_back(el.e1x5()/el.e5x5());
-    Ele_sigmaIetaIetaFull5x5.push_back(el.full5x5_sigmaIetaIeta()); 
+    Ele_sigmaIetaIetaFull5x5.push_back(el.full5x5_sigmaIetaIeta());
     Ele_e2x5MaxFull5x5.push_back(el.full5x5_e2x5Max());
     Ele_e1x5Full5x5.push_back(el.full5x5_e1x5());
     Ele_e5x5Full5x5.push_back(el.full5x5_e5x5());
@@ -1194,29 +1233,29 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
     Ele_frac15.push_back( lazyTools_->e1x5(*(el.superCluster()->seed()))/el.full5x5_e5x5() );
     Ele_nbVtx.push_back(vertices->size());
     if(vertices->size()>0){
-      Ele_dxy.push_back(el.gsfTrack()->dxy(PV.position()));   
-      Ele_dz.push_back(el.gsfTrack()->dz(PV.position())); 
+      Ele_dxy.push_back(el.gsfTrack()->dxy(PV.position()));
+      Ele_dz.push_back(el.gsfTrack()->dz(PV.position()));
     }
     else{
-      Ele_dxy.push_back(el.gsfTrack()->dxy());   
+      Ele_dxy.push_back(el.gsfTrack()->dxy());
       Ele_dz.push_back(el.gsfTrack()->dz());
     }
     Ele_isEcalDrivenSeed.push_back(el.ecalDrivenSeed());
     Ele_isPassConversionVeto.push_back(el.passConversionVeto());
     Ele_charge.push_back(el.gsfTrack()->charge());
     Ele_rhoIso.push_back(rhoIso);
-    Ele_nbOfMissingHits.push_back(el.gsfTrack()->numberOfLostHits()); 
+    Ele_nbOfMissingHits.push_back(el.gsfTrack()->numberOfLostHits());
     Ele_fbrem.push_back(el.fbrem());
     Ele_EoverP.push_back(el.eSeedClusterOverP());
-    Ele_Xposition.push_back(el.caloPosition().x());   
-    Ele_Yposition.push_back(el.caloPosition().y()); 
+    Ele_Xposition.push_back(el.caloPosition().x());
+    Ele_Yposition.push_back(el.caloPosition().y());
     //------------- detector isolation -------------------------
     Ele_hcalDepth1OverEcal.push_back(el.hcalDepth1OverEcal());
     Ele_hcalDepth2OverEcal.push_back(el.hcalDepth2OverEcal());
     Ele_dr03HcalDepth2TowerSumEt.push_back(el.dr03HcalDepth2TowerSumEt());
-    Ele_hcalDepth2TowerSumEtNoVeto.push_back(el.isolationVariables03().hcalDepth2TowerSumEt);// hcaldepht2 iso deposit with 
+    Ele_hcalDepth2TowerSumEtNoVeto.push_back(el.isolationVariables03().hcalDepth2TowerSumEt);// hcaldepht2 iso deposit with
     // electron footprint removed
-    Ele_hcalDepth1TowerSumEtNoVeto.push_back(el.isolationVariables03().hcalDepth1TowerSumEt);// hcaldepht1 iso deposit with 
+    Ele_hcalDepth1TowerSumEtNoVeto.push_back(el.isolationVariables03().hcalDepth1TowerSumEt);// hcaldepht1 iso deposit with
     // electron footprint removed
     Ele_EcalPlusHcald1iso.push_back(el.dr03EcalRecHitSumEt() + el.dr03HcalDepth1TowerSumEt());
     Ele_dr03EcalRecHitSumEt.push_back(el.dr03EcalRecHitSumEt());
@@ -1224,16 +1263,16 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
     Ele_dr03HcalDepth1TowerSumEtBc.push_back(el.dr03HcalDepth1TowerSumEtBc());
     //------------- PF isolation from pat::ele -------------------------
     Ele_pfSumPhotonEt.push_back(el.pfIsolationVariables().sumPhotonEt);
-    Ele_pfSumChargedHadronPt.push_back(el.pfIsolationVariables().sumChargedHadronPt); 
+    Ele_pfSumChargedHadronPt.push_back(el.pfIsolationVariables().sumChargedHadronPt);
     Ele_pfSumNeutralHadronEt.push_back(el.pfIsolationVariables().sumNeutralHadronEt);
-    Ele_pfSumPUPt.push_back(el.pfIsolationVariables().sumPUPt);  
+    Ele_pfSumPUPt.push_back(el.pfIsolationVariables().sumPUPt);
     // do deltaBeta
     double charged   = el.pfIsolationVariables().sumPhotonEt;
     double neutral   = el.pfIsolationVariables().sumNeutralHadronEt;
     double pileup    = el.pfIsolationVariables().sumPUPt;
     double deltaBeta = charged + std::max(0.0, neutral-0.5*pileup);
     Ele_pfDeltaBeta.push_back(deltaBeta);
-  }    
+  }
 }
 //=============================================================
 //
@@ -1241,7 +1280,7 @@ void MakeZprimeMiniAodTreeMC::PatElectronTree(const edm::Event& iEvent,const edm
 //
 //=============================================================
 void MakeZprimeMiniAodTreeMC::TriggerMatchingTree(const edm::Event& iEvent,const edm::EventSetup& es)
-{ 
+{
   int NbTriggers = 0;
   int NbTriggerObj = 0;
   HLT_nb.clear();
@@ -1283,7 +1322,7 @@ void MakeZprimeMiniAodTreeMC::TriggerMatchingTree(const edm::Event& iEvent,const
         names.triggerName(i) != "HLT_TkMu50_v3" && names.triggerName(i) != "HLT_TkMu50_v4"  &&
         names.triggerName(i) != "HLT_TkMu50_v5" && names.triggerName(i) != "HLT_TkMu50_v6"  &&
         names.triggerName(i) != "HLT_TkMu50_v7" && names.triggerName(i) != "HLT_TkMu50_v8"  &&
-        names.triggerName(i) != "HLT_TkMu50_v9" && names.triggerName(i) != "HLT_TkMu50_v10" && 
+        names.triggerName(i) != "HLT_TkMu50_v9" && names.triggerName(i) != "HLT_TkMu50_v10" &&
 	names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v1" && names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v2"  &&
         names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v3" && names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v4"  &&
         names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v5" && names.triggerName(i) != "HLT_DoubleEle33_CaloIdL_MW_v6"  &&
@@ -1303,17 +1342,17 @@ void MakeZprimeMiniAodTreeMC::TriggerMatchingTree(const edm::Event& iEvent,const
         names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v3" && names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v4"  &&
         names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v5" && names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v6"  &&
         names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v7" && names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v8"  &&
-        names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v9" && names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v10" 
+        names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v9" && names.triggerName(i) != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v10"
         ) continue;
     //std::string const& name = names.triggerName(i);
     //full_name = name;
     NbTriggers++;
     HLT_nb.push_back(NbTriggers);
-    HLT_name.push_back(names.triggerName(i));   
+    HLT_name.push_back(names.triggerName(i));
     HLT_isaccept.push_back(triggerBits->accept(i));
-    /*std::cout << "Trigger " << names.triggerName(i)  << 
+    /*std::cout << "Trigger " << names.triggerName(i)  <<
       ", prescale " << triggerPrescales->getPrescaleForIndex(i) <<
-      ": " << (triggerBits->accept(i) ? "PASS" : "fail (or not run)") 
+      ": " << (triggerBits->accept(i) ? "PASS" : "fail (or not run)")
       << std::endl;*/
   }
   for (unsigned i = 0; i < trigobj_handle->size(); ++i) {
@@ -1344,7 +1383,7 @@ void MakeZprimeMiniAodTreeMC::TriggerMatchingTree(const edm::Event& iEvent,const
           pathnames[j] != "HLT_TkMu50_v3" && pathnames[j] != "HLT_TkMu50_v4"  &&
           pathnames[j] != "HLT_TkMu50_v5" && pathnames[j] != "HLT_TkMu50_v6"  &&
           pathnames[j] != "HLT_TkMu50_v7" && pathnames[j] != "HLT_TkMu50_v8"  &&
-          pathnames[j] != "HLT_TkMu50_v9" && pathnames[j] != "HLT_TkMu50_v10" && 
+          pathnames[j] != "HLT_TkMu50_v9" && pathnames[j] != "HLT_TkMu50_v10" &&
 	  pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v1" && pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v2"  &&
           pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v3" && pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v4"  &&
           pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v5" && pathnames[j] != "HLT_DoubleEle33_CaloIdL_MW_v6"  &&
@@ -1367,7 +1406,7 @@ void MakeZprimeMiniAodTreeMC::TriggerMatchingTree(const edm::Event& iEvent,const
           pathnames[j] != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v9" && pathnames[j] != "HLT_Mu33_Ele33_CaloIdL_GsfTrkIdVL_v10"
           ) continue;
       HLTObj_nbObj.push_back(NbTriggerObj);
-      HLTObj_pt.push_back(src.pt()); 
+      HLTObj_pt.push_back(src.pt());
       HLTObj_eta.push_back(src.eta());
       HLTObj_phi.push_back(src.phi());
       HLTObj_collection.push_back(pathnames[j]);
@@ -1395,7 +1434,7 @@ bool MakeZprimeMiniAodTreeMC::isAncestor(const reco::Candidate* ancestor, const 
 }
 
 void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::EventSetup& es)
-{ 
+{
   int NbGenMuons  = 0;
   iGen.clear();
   idGen.clear();
@@ -1408,15 +1447,91 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
   pxGen.clear();
   pyGen.clear();
   pzGen.clear();
+
+  xsWeight = -1.;
+  passPreFSRMInvCut = false;
+  passMInvCut       = false;
+  passST1MInvCut    = false;
+  passST23MInvCut   = false;
+  passHSMInvCut     = false;
+
+  edm::Handle<bool>   h_passMInvCut;
+  edm::Handle<bool>   h_passPreFSRMInvCut;
+  edm::Handle<bool>   h_passST1MInvCut;
+  edm::Handle<bool>   h_passST23MInvCut;
+  edm::Handle<bool>   h_passHSMInvCut;
+  edm::Handle<double> h_xsWeight;
+
+  iEvent.getByToken(m_passMInvCutToken,       h_passMInvCut);
+  iEvent.getByToken(m_passPreFSRMInvCutToken, h_passPreFSRMInvCut);
+  iEvent.getByToken(m_passST1MInvCutToken,    h_passST1MInvCut);
+  iEvent.getByToken(m_passST23MInvCutToken,   h_passST23MInvCut);
+  iEvent.getByToken(m_passHSMInvCutToken,     h_passHSMInvCut);
+  iEvent.getByToken(m_xsWeightToken,          h_xsWeight);
+
+  if (h_xsWeight.isValid()) {
+    xsWeight = *h_xsWeight;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "xsWeight::" << *h_xsWeight;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to xsWeight";
+  }
+
+  if (h_passPreFSRMInvCut.isValid()) {
+    passPreFSRMInvCut = *h_passPreFSRMInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passPreFSRMInvCut::" << *h_passPreFSRMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passPreFSRMInvCut";
+  }
+
+  if (h_passST1MInvCut.isValid()) {
+    passST1MInvCut = *h_passST1MInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passST1MInvCut::" << *h_passST1MInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passST1MInvCut";
+  }
+
+  if (h_passST23MInvCut.isValid()) {
+    passST23MInvCut = *h_passST23MInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passST23MInvCut::" << *h_passST23MInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passST23MInvCut";
+  }
+
+  if (h_passHSMInvCut.isValid()) {
+    passHSMInvCut = *h_passHSMInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passHSMInvCut::" << *h_passHSMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passHSMInvCut";
+  }
+
+  if (h_passMInvCut.isValid()) {
+    passMInvCut = *h_passMInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passMInvCut::" << *h_passMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passMInvCut";
+  }
+
   // Pruned particles are the one containing "important" stuff
   Handle<edm::View<reco::GenParticle> > pruned;
   iEvent.getByToken(prunedGenToken_,pruned);
-  if (!(pruned.isValid())) return; 
+  if (!(pruned.isValid())) return;
   // Packed particles are all the status 1, so usable to remake jets
   // The navigation from status 1 to pruned is possible (the other direction should be made by hand)
   Handle<edm::View<pat::PackedGenParticle> > packed;
   iEvent.getByToken(packedGenToken_,packed);
-  //let's try to find all status1 originating directly from a B meson decay 
+  //let's try to find all status1 originating directly from a B meson decay
   for(size_t i=0; i<pruned->size();i++){
     //if(abs((*pruned)[i].pdgId()) > 22 && abs((*pruned)[i].pdgId()) <24){
     if(abs((*pruned)[i].pdgId()) < BosonID_){
@@ -1424,12 +1539,12 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
       //std::cout << "PdgID: " << Zprime->pdgId() << " pt " << Zprime->pt() << " eta: " << Zprime->eta() << " phi: " << Zprime->phi() << std::endl;
       //std::cout << "  found daugthers: " << std::endl;
       for(size_t j=0; j<packed->size();j++){
-	//get the pointer to the first survied ancestor of a given packed GenParticle in the prunedCollection 
+	//get the pointer to the first survied ancestor of a given packed GenParticle in the prunedCollection
 	const Candidate * motherInPrunedCollection = (*packed)[j].mother(0) ;
 	if(motherInPrunedCollection != nullptr && isAncestor( Zprime , motherInPrunedCollection)){
 	  if( (*packed)[j].pt() < 20.0 ) continue;
-	  if( fabs((*packed)[j].pdgId()) != ParticleID1_ && 
-	      fabs((*packed)[j].pdgId()) != ParticleID2_ && 
+	  if( fabs((*packed)[j].pdgId()) != ParticleID1_ &&
+	      fabs((*packed)[j].pdgId()) != ParticleID2_ &&
 	      fabs((*packed)[j].pdgId()) != ParticleID3_ ) continue;
 	  if( (*packed)[j].status() > ParticleStatus_ ) continue;
 	  NbGenMuons++;
@@ -1455,7 +1570,7 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
 //
 //=============================================================
 void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::EventSetup& es)
-{  
+{
   int NbMuons = 0;
   Mu_nbMuon.clear();
   Mu_isTightMuon.clear();
@@ -1495,7 +1610,7 @@ void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::Event
   Mu_thetaTunePMuonBestTrack.clear();
   Mu_chargeTunePMuonBestTrack.clear();
   Mu_absdxyTunePMuonBestTrack.clear();
-  Mu_absdzTunePMuonBestTrack.clear();  
+  Mu_absdzTunePMuonBestTrack.clear();
   Mu_ptInnerTrack.clear();
   Mu_dPToverPTInnerTrack.clear();
   Mu_pxInnerTrack.clear();
@@ -1516,7 +1631,7 @@ void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::Event
   Mu_stationMask.clear();
   Mu_numberOfMatchedRPCLayers.clear();
   //Mu_isMuonsCleaned.clear();
-  // Get TransientTracks (for use in e.g. the vertex fit) for each of                   
+  // Get TransientTracks (for use in e.g. the vertex fit) for each of
   // the muon tracks, using e.g. the cocktail momentum.
   //edm::ESHandle<TransientTrackBuilder> ttkb;
   //es.get<TransientTrackRecord>().get("TransientTrackBuilder", ttkb);
@@ -1563,10 +1678,10 @@ void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::Event
     const reco::TrackRef& tunePTrack  = mu.tunePMuonBestTrack();
     Mu_ptTunePMuonBestTrack.push_back(tunePTrack->pt());
     Mu_dPToverPTTunePMuonBestTrack.push_back(tunePTrack->ptError()/tunePTrack->pt());
-    Mu_pxTunePMuonBestTrack.push_back(tunePTrack->px()); //px component of the track 
-    Mu_pyTunePMuonBestTrack.push_back(tunePTrack->py()); //py component of the track 
-    Mu_pzTunePMuonBestTrack.push_back(tunePTrack->pz()); //pz component of the track 
-    Mu_pTunePMuonBestTrack.push_back(tunePTrack->p());   //magnitude of momentum vector 
+    Mu_pxTunePMuonBestTrack.push_back(tunePTrack->px()); //px component of the track
+    Mu_pyTunePMuonBestTrack.push_back(tunePTrack->py()); //py component of the track
+    Mu_pzTunePMuonBestTrack.push_back(tunePTrack->pz()); //pz component of the track
+    Mu_pTunePMuonBestTrack.push_back(tunePTrack->p());   //magnitude of momentum vector
     Mu_etaTunePMuonBestTrack.push_back(tunePTrack->eta());
     Mu_phiTunePMuonBestTrack.push_back(tunePTrack->phi());
     Mu_thetaTunePMuonBestTrack.push_back(tunePTrack->theta());
@@ -1579,12 +1694,12 @@ void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::Event
     Mu_eta.push_back(mu.eta());
     Mu_phi.push_back(mu.phi());
     Mu_charge.push_back(mu.charge());
-    Mu_ptInnerTrack.push_back(mu.innerTrack()->pt());    
+    Mu_ptInnerTrack.push_back(mu.innerTrack()->pt());
     Mu_dPToverPTInnerTrack.push_back(mu.innerTrack()->ptError()/mu.innerTrack()->pt());
-    Mu_pxInnerTrack.push_back(mu.innerTrack()->px()); 
-    Mu_pyInnerTrack.push_back(mu.innerTrack()->py()); 
-    Mu_pzInnerTrack.push_back(mu.innerTrack()->pz()); 
-    Mu_pInnerTrack.push_back(mu.innerTrack()->p());   
+    Mu_pxInnerTrack.push_back(mu.innerTrack()->px());
+    Mu_pyInnerTrack.push_back(mu.innerTrack()->py());
+    Mu_pzInnerTrack.push_back(mu.innerTrack()->pz());
+    Mu_pInnerTrack.push_back(mu.innerTrack()->p());
     Mu_etaInnerTrack.push_back(mu.innerTrack()->eta());
     Mu_phiInnerTrack.push_back(mu.innerTrack()->phi());
     Mu_thetaInnerTrack.push_back(mu.innerTrack()->theta());
@@ -1627,7 +1742,7 @@ void MakeZprimeMiniAodTreeMC::PatMuonTree(const edm::Event& evt,const edm::Event
 }
 
 void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx(const edm::Event& evt,const edm::EventSetup& es)
-{ 
+{
   int NbMuons1 = 0;
   int NbMuons2 = 0;
   int NbMuons3 = 0;
@@ -1664,10 +1779,10 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx(const edm::Event& evt,const edm
     if( !mu.globalTrack().isNonnull() ) continue;
     if( mu.isTrackerMuon()==false ) continue;
     MuonBestTrack1 = mu.tunePMuonBestTrack();
-    if( MuonBestTrack1->pt()>53.0 && (mu.isolationR03().sumPt/mu.innerTrack()->pt()<0.10) 
-    	&& (MuonBestTrack1->ptError()/MuonBestTrack1->pt()<0.3) && 
+    if( MuonBestTrack1->pt()>53.0 && (mu.isolationR03().sumPt/mu.innerTrack()->pt()<0.10)
+    	&& (MuonBestTrack1->ptError()/MuonBestTrack1->pt()<0.3) &&
         fabs(MuonBestTrack1->dxy(vertex.position()))<0.2 &&
-        mu.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+        mu.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
         mu.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
         mu.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
         (mu.numberOfMatchedStations()>1
@@ -1687,10 +1802,10 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx(const edm::Event& evt,const edm
 	MuonBestTrack2 = mu2.tunePMuonBestTrack();
 	//cout << "PT 2mu= " << MuonBestTrack2->pt()  << " and charge =" <<  MuonBestTrack2->charge()<< endl;
         if(MuonBestTrack2->pt() == MuonBestTrack1->pt()) continue;
-	if( MuonBestTrack2->pt()>53.0 && (mu2.isolationR03().sumPt/mu2.innerTrack()->pt()<0.10) 
-	    && (MuonBestTrack2->ptError()/MuonBestTrack2->pt()<0.3) && 
+	if( MuonBestTrack2->pt()>53.0 && (mu2.isolationR03().sumPt/mu2.innerTrack()->pt()<0.10)
+	    && (MuonBestTrack2->ptError()/MuonBestTrack2->pt()<0.3) &&
 	    fabs(MuonBestTrack2->dxy(vertex.position()))<0.2 &&
-	    mu2.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+	    mu2.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
 	    mu2.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
 	    mu2.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
 	    (mu2.numberOfMatchedStations()>1
@@ -1724,12 +1839,12 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx(const edm::Event& evt,const edm
 	    if( mu3.isTrackerMuon()==false ) continue;
 	    MuonBestTrack3 = mu3.tunePMuonBestTrack();
 	    //cout << "PT 3mu= " << MuonBestTrack3->pt()  << " and charge =" <<  MuonBestTrack3->charge() << endl;
-	    if(MuonBestTrack3->pt() == MuonBestTrack1->pt()) continue;	   
-	    if(MuonBestTrack3->pt() == MuonBestTrack2->pt()) continue;	    
-	    if( MuonBestTrack3->pt()>53.0 && (mu3.isolationR03().sumPt/mu3.innerTrack()->pt()<0.10) 
-		&& (MuonBestTrack3->ptError()/MuonBestTrack3->pt()<0.3) && 
+	    if(MuonBestTrack3->pt() == MuonBestTrack1->pt()) continue;
+	    if(MuonBestTrack3->pt() == MuonBestTrack2->pt()) continue;
+	    if( MuonBestTrack3->pt()>53.0 && (mu3.isolationR03().sumPt/mu3.innerTrack()->pt()<0.10)
+		&& (MuonBestTrack3->ptError()/MuonBestTrack3->pt()<0.3) &&
 		fabs(MuonBestTrack3->dxy(vertex.position()))<0.2 &&
-		mu3.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+		mu3.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
 		mu3.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
 		mu3.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
 		(mu3.numberOfMatchedStations()>1
@@ -1783,7 +1898,7 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx(const edm::Event& evt,const edm
   }
 }
 void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx30GeV(const edm::Event& evt,const edm::EventSetup& es)
-{ 
+{
   int NbMuons1 = 0;
   int NbMuons2 = 0;
   int NbMuons3 = 0;
@@ -1820,10 +1935,10 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx30GeV(const edm::Event& evt,cons
     if( !mu.globalTrack().isNonnull() ) continue;
     if( mu.isTrackerMuon()==false ) continue;
     MuonBestTrack1 = mu.tunePMuonBestTrack();
-    if( MuonBestTrack1->pt()>30.0 && (mu.isolationR03().sumPt/mu.innerTrack()->pt()<0.10) 
-    	&& (MuonBestTrack1->ptError()/MuonBestTrack1->pt()<0.3) && 
+    if( MuonBestTrack1->pt()>30.0 && (mu.isolationR03().sumPt/mu.innerTrack()->pt()<0.10)
+    	&& (MuonBestTrack1->ptError()/MuonBestTrack1->pt()<0.3) &&
         fabs(MuonBestTrack1->dxy(vertex.position()))<0.2 &&
-        mu.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+        mu.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
         mu.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
         mu.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
         (mu.numberOfMatchedStations()>1
@@ -1839,10 +1954,10 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx30GeV(const edm::Event& evt,cons
 	if( mu2.isTrackerMuon()==false ) continue;
 	MuonBestTrack2 = mu2.tunePMuonBestTrack();
         if(MuonBestTrack2->pt() == MuonBestTrack1->pt()) continue;
-	if( MuonBestTrack2->pt()>30.0 && (mu2.isolationR03().sumPt/mu2.innerTrack()->pt()<0.10) 
-	    && (MuonBestTrack2->ptError()/MuonBestTrack2->pt()<0.3) && 
+	if( MuonBestTrack2->pt()>30.0 && (mu2.isolationR03().sumPt/mu2.innerTrack()->pt()<0.10)
+	    && (MuonBestTrack2->ptError()/MuonBestTrack2->pt()<0.3) &&
 	    fabs(MuonBestTrack2->dxy(vertex.position()))<0.2 &&
-	    mu2.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+	    mu2.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
 	    mu2.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
 	    mu2.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
 	    (mu2.numberOfMatchedStations()>1
@@ -1868,12 +1983,12 @@ void MakeZprimeMiniAodTreeMC::ComputeMuonMassVtx30GeV(const edm::Event& evt,cons
 	    if( !mu3.globalTrack().isNonnull() ) continue;
 	    if( mu3.isTrackerMuon()==false ) continue;
 	    MuonBestTrack3 = mu3.tunePMuonBestTrack();
-	    if(MuonBestTrack3->pt() == MuonBestTrack1->pt()) continue;	   
-	    if(MuonBestTrack3->pt() == MuonBestTrack2->pt()) continue;	    
-	    if( MuonBestTrack3->pt()>30.0 && (mu3.isolationR03().sumPt/mu3.innerTrack()->pt()<0.10) 
-		&& (MuonBestTrack3->ptError()/MuonBestTrack3->pt()<0.3) && 
+	    if(MuonBestTrack3->pt() == MuonBestTrack1->pt()) continue;
+	    if(MuonBestTrack3->pt() == MuonBestTrack2->pt()) continue;
+	    if( MuonBestTrack3->pt()>30.0 && (mu3.isolationR03().sumPt/mu3.innerTrack()->pt()<0.10)
+		&& (MuonBestTrack3->ptError()/MuonBestTrack3->pt()<0.3) &&
 		fabs(MuonBestTrack3->dxy(vertex.position()))<0.2 &&
-		mu3.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 && 
+		mu3.globalTrack()->hitPattern().trackerLayersWithMeasurement()>5 &&
 		mu3.globalTrack()->hitPattern().numberOfValidPixelHits()>0 &&
 		mu3.globalTrack()->hitPattern().numberOfValidMuonHits()>0 &&
 		(mu3.numberOfMatchedStations()>1
@@ -1927,7 +2042,7 @@ void MakeZprimeMiniAodTreeMC::PrimaryVertexTree(const edm::Event& iEvent,const e
   PositionY.clear();
   PositionZ.clear();
   PositionRho.clear();
-  edm::Handle<reco::VertexCollection> pvHandle; 
+  edm::Handle<reco::VertexCollection> pvHandle;
   iEvent.getByToken(vtxToken_,pvHandle);
   const reco::VertexCollection &vertices = *pvHandle.product();
   for(reco::VertexCollection::const_iterator it=vertices.begin() ; it!=vertices.end() ; ++it){
@@ -1952,21 +2067,21 @@ void MakeZprimeMiniAodTreeMC::fillMET(const edm::Event& iEvent)
   iEvent.getByToken(metToken_, mets);
   const pat::MET &met = mets->front();
   //[1] https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETRun2Corrections
-  //It is strongly recommended to use the Type-1 corrected MET, directly available from miniaod. 
-  //In case it is needed to recompute the Type-1 MET, please follow this twiki: here you find how 
-  //to get straight from miniAOD (slimmedMET and slimmedMETnoHF), how to recalculate correction 
-  //and uncertainties with the latest and greatest JEC. 
-  //You can find instructions for each analysis release. 
+  //It is strongly recommended to use the Type-1 corrected MET, directly available from miniaod.
+  //In case it is needed to recompute the Type-1 MET, please follow this twiki: here you find how
+  //to get straight from miniAOD (slimmedMET and slimmedMETnoHF), how to recalculate correction
+  //and uncertainties with the latest and greatest JEC.
+  //You can find instructions for each analysis release.
   //[2] https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Fall15_MiniAOD_v2_campaign
   //the slimmedMETsNoHF was dropped (the recommendation from the MET group is to use standard slimmedMETs in 76X)
   //The default type1 corrected MET
-  PFMet_et_cor    = met.et();     
-  PFMet_pt_cor    = met.pt();     
-  PFMet_phi_cor   = met.phi();    
-  PFMet_en_cor    = met.energy(); 
-  PFMet_px_cor    = met.px();     
-  PFMet_py_cor    = met.py();     
-  PFMet_pz_cor    = met.pz();     
+  PFMet_et_cor    = met.et();
+  PFMet_pt_cor    = met.pt();
+  PFMet_phi_cor   = met.phi();
+  PFMet_en_cor    = met.energy();
+  PFMet_px_cor    = met.px();
+  PFMet_py_cor    = met.py();
+  PFMet_pz_cor    = met.pz();
   PFMet_sumEt_cor = met.sumEt();
   //Type I MET Uncertainties
   pfMETshiftedPtJetEnUp      = met.shiftedPt(pat::MET::JetEnUp, pat::MET::Type1 ) ;
@@ -1978,16 +2093,16 @@ void MakeZprimeMiniAodTreeMC::fillMET(const edm::Event& iEvent)
   pfMETshiftedPtJetResUp     = met.shiftedPt(pat::MET::JetResUp, pat::MET::Type1 ) ;
   pfMETshiftedPtJetResDn     = met.shiftedPt(pat::MET::JetResDown, pat::MET::Type1 ) ;
   pfMETshiftedPtUnclEnUp     = met.shiftedPt(pat::MET::UnclusteredEnUp, pat::MET::Type1 ) ;
-  pfMETshiftedPtUnclEnDn     = met.shiftedPt(pat::MET::UnclusteredEnDown, pat::MET::Type1 ) ; 
+  pfMETshiftedPtUnclEnDn     = met.shiftedPt(pat::MET::UnclusteredEnDown, pat::MET::Type1 ) ;
   pfMETshiftedPtPhoEnUp      = met.shiftedPt(pat::MET::PhotonEnUp, pat::MET::Type1 ) ;
-  pfMETshiftedPtPhoEnDn      = met.shiftedPt(pat::MET::PhotonEnDown, pat::MET::Type1 ) ; 
+  pfMETshiftedPtPhoEnDn      = met.shiftedPt(pat::MET::PhotonEnDown, pat::MET::Type1 ) ;
   //pfMETshiftedPtJetEnUpSmear = met.shiftedPhi(pat::MET::METUncertainty::JetResUpSmear);
   //pfMETshiftedPtJetEnDnSmear = met.shiftedPt(pat::MET::JetResDownSmear, pat::MET::Type1Smear ) ;
   //pfMETUncertaintySize       = met.shiftedPt(pat::MET::METUncertaintySize, pat::MET::Type1 ) ;
   //pfMETFullUncertaintySize   = met.shiftedPt(pat::MET::METFullUncertaintySize, pat::MET::Type1 ) ;
 
   //cout<<"jet smeared = "<<met.shiftedPhi(pat::MET::METUncertainty::JetResUpSmear)<<endl;
- 
+
   /*
   printf("met_pt = %f pt:JEC up = %f pt:JEC dn = %f uncertainty1 = %f \n",
   met.pt(),met.shiftedPt(pat::MET::JetEnUp, pat::MET::Type1),met.shiftedPhi(pat::MET::JetEnDown, pat::MET::Type1),met.pt()-met.shiftedPt(pat::MET::JetEnUp, pat::MET::Type1));
@@ -1996,24 +2111,24 @@ void MakeZprimeMiniAodTreeMC::fillMET(const edm::Event& iEvent)
   */
   //std::cout<<"met uncer"<< pat::MET::METUncertainty(12) <<endl;
   //The Raw PF Met (un-corrected MET in CMSSW_7_4_12 or later, on 74X version 2 miniAODs)
-  /*PFMet_pt_uncor    = met.uncorPt();     
-  PFMet_phi_uncor   = met.uncorPhi();    
-  PFMet_en_uncor    = met.uncorEnergy(); 
-  PFMet_px_uncor    = met.uncorPx();     
-  PFMet_py_uncor    = met.uncorPy();     
-  PFMet_pz_uncor    = met.uncorPz();     
+  /*PFMet_pt_uncor    = met.uncorPt();
+  PFMet_phi_uncor   = met.uncorPhi();
+  PFMet_en_uncor    = met.uncorEnergy();
+  PFMet_px_uncor    = met.uncorPx();
+  PFMet_py_uncor    = met.uncorPy();
+  PFMet_pz_uncor    = met.uncorPz();
   PFMet_sumEt_uncor = met.uncorSumEt();
   //The Raw PF Met (un-corrected MET in CMSSW_7_4_11 or earlier, on 74X version 1 miniAODs)
-  PFMet_pt_uncor    = met.uncorrectedPt();     
-  PFMet_phi_uncor   = met.uncorrectedPhi();    
+  PFMet_pt_uncor    = met.uncorrectedPt();
+  PFMet_phi_uncor   = met.uncorrectedPhi();
   PFMet_sumEt_uncor = met.uncorrectedSumEt();*/
-  //The raw calo ETmiss  
-  CaloMet_pt    = met.caloMETPt();     
-  CaloMet_phi   = met.caloMETPhi();    
+  //The raw calo ETmiss
+  CaloMet_pt    = met.caloMETPt();
+  CaloMet_phi   = met.caloMETPhi();
   CaloMet_sumEt = met.caloMETSumEt();
   PFMet_shiftedPt_JetEnUp   = met.shiftedPt(pat::MET::JetEnUp);
   PFMet_shiftedPt_JetEnDown = met.shiftedPt(pat::MET::JetEnDown);
-  if (met.genMET() != NULL ) GenMet_pt = met.genMET()->pt();  
+  if (met.genMET() != NULL ) GenMet_pt = met.genMET()->pt();
   /*edm::Handle<double> metsighandle;
   iEvent.getByToken(theMETSignificance_, metsighandle);
   METSign=*metsighandle;*/
@@ -2025,7 +2140,7 @@ void MakeZprimeMiniAodTreeMC::fillMET(const edm::Event& iEvent)
 //
 //=============================================================
 void MakeZprimeMiniAodTreeMC::GenJetTree(const edm::Event& iEvent)
-{ 
+{
   int NbGenJets  = 0;
   iGenJet.clear();
   idGenJet.clear();
@@ -2037,7 +2152,7 @@ void MakeZprimeMiniAodTreeMC::GenJetTree(const edm::Event& iEvent)
   /**** GET GENJETS ****/
   edm::Handle<reco::GenJetCollection> h_genjets;
   iEvent.getByToken( EDMGenJetsToken_,h_genjets );
-  if (!(h_genjets.isValid())) return; 
+  if (!(h_genjets.isValid())) return;
   std::vector<reco::GenJet> const &genjets = *h_genjets;
   for(size_t i=0; i<genjets.size();i++){
     if(genjets[i].pt()<20.0) continue;
@@ -2051,7 +2166,7 @@ void MakeZprimeMiniAodTreeMC::GenJetTree(const edm::Event& iEvent)
     chargeGenJet.push_back(genjets[i].charge());
   }
 }
- 
+
 //=============================================================
 //
 //            Method for Jets Tree
@@ -2074,7 +2189,7 @@ void MakeZprimeMiniAodTreeMC::JetsTree(const edm::Event& iEvent,const edm::Event
   iEvent.getByToken(jetToken_, jets);
   //int ijet = 0;
   for (const pat::Jet &j : *jets) {
-    double in = 0, out = 0; 
+    double in = 0, out = 0;
     for (unsigned int id = 0, nd = j.numberOfDaughters(); id < nd; ++id) {
       const pat::PackedCandidate &dau = dynamic_cast<const pat::PackedCandidate &>(*j.daughter(id));
       if (dau.charge() == 0) continue;
@@ -2105,7 +2220,7 @@ void MakeZprimeMiniAodTreeMC::JetsTree(const edm::Event& iEvent,const edm::Event
       jet_pileup_mva_disc.push_back(j.userFloat("pileupJetId:fullDiscriminant"));
     }
     else continue;
-  }   
+  }
 }
 //=============================================================
 //
@@ -2127,7 +2242,7 @@ void MakeZprimeMiniAodTreeMC::BtaggingTree(const edm::Event& iEvent)
   iEvent.getByToken(jetToken_, jets);
   // loop over jets
   for( auto jet = jets->begin(); jet != jets->end(); ++jet )
-    { 
+    {
       // fill discriminator variables
       int flavor = std::abs( jet->partonFlavour() );
       for( const std::string &bDiscr : bDiscriminators_ )
@@ -2157,7 +2272,7 @@ void MakeZprimeMiniAodTreeMC::BtaggingTree(const edm::Event& iEvent)
 //
 //=============================================================
 void MakeZprimeMiniAodTreeMC::ParticleFlowPhotonTree(const edm::Event& iEvent,const edm::EventSetup& es)
-{ 
+{
   pfphoton_size = 0;
   pfphoton_pt.clear();
   pfphoton_eta.clear();
@@ -2207,7 +2322,7 @@ void MakeZprimeMiniAodTreeMC::ParticleFlowPhotonTree(const edm::Event& iEvent,co
     }
   }
 }
-//madgraph MC samples reweighing 
+//madgraph MC samples reweighing
 void MakeZprimeMiniAodTreeMC::EventsReWeighting(const edm::Event& evt){
   MC_weighting.clear();
   float EventWeight = 1.0;
@@ -2285,8 +2400,8 @@ void MakeZprimeMiniAodTreeMC::TauTree(const edm::Event& iEvent)
   [11] kKilled,                   // MC only flag: the channel is killed in the real detector
   [12] kTPSaturated,              // the channel is in a region with saturated TP
   [13] kL1SpikeFlag,              // the channel is in a region with TP with sFGVB = 0
-  [14] kWeird,                    // the signal is believed to originate from an anomalous deposit (spike) 
-  [15] kDiWeird,                  // the signal is anomalous, and neighbors another anomalous signal  
+  [14] kWeird,                    // the signal is believed to originate from an anomalous deposit (spike)
+  [15] kDiWeird,                  // the signal is anomalous, and neighbors another anomalous signal
   [16] kHasSwitchToGain6,         // at least one data frame is in G6
   [17] kHasSwitchToGain1,         // at least one data frame is in G1
   [18] kUnknown                   // to ease the interface with functions returning flags.
