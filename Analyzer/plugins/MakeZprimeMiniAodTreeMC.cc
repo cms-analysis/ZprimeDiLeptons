@@ -174,7 +174,7 @@ private:
   // ----------member data ---------------------------   //
   edm::EDGetTokenT<double> rhoToken;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoProductToken;
-  edm::EDGetTokenT<bool>   m_passMInvCutToken, m_passPreFSRMInvCutToken;
+  edm::EDGetTokenT<bool>   m_passMInvCutToken, m_passPreFSRMInvCutToken, m_passST1MInvCutToken, m_passST23MInvCutToken, m_passHSMInvCutToken;
   edm::EDGetTokenT<double> m_xsWeightToken;
   edm::EDGetTokenT<reco::GenJetCollection> EDMGenJetsToken_;
   edm::EDGetTokenT<reco::SuperClusterCollection> scProducer_;
@@ -421,6 +421,9 @@ private:
   double xsWeight;
   bool   passPreFSRMInvCut;
   bool   passMInvCut;
+  bool   passST1MInvCut;
+  bool   passST23MInvCut;
+  bool   passHSMInvCut;
   //==================================================
   //
   //           Create vectors for Muons variables
@@ -571,6 +574,9 @@ MakeZprimeMiniAodTreeMC::MakeZprimeMiniAodTreeMC(const edm::ParameterSet& iConfi
   genInfoProductToken(consumes <GenEventInfoProduct> (edm::InputTag(std::string("generator")))),
   m_passMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passMInvCutTag"))),
   m_passPreFSRMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passPreFSRMInvCutTag"))),
+  m_passST1MInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passST1MInvCutTag"))),
+  m_passST23MInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passST23MInvCutTag"))),
+  m_passHSMInvCutToken(consumes<bool,edm::InEvent>(iConfig.getParameter<edm::InputTag>("passHSMInvCutTag"))),
   m_xsWeightToken(consumes<double,edm::InEvent>(iConfig.getParameter<edm::InputTag>("xsWeightTag"))),
   EDMGenJetsToken_(consumes<reco::GenJetCollection>(iConfig.getParameter<edm::InputTag>("JetSource"))),
   scProducer_(consumes<reco::SuperClusterCollection>(iConfig.getParameter<edm::InputTag>("scProducer"))),
@@ -768,6 +774,9 @@ void MakeZprimeMiniAodTreeMC::beginJob()
   mytree->Branch("xsWeight",         &xsWeight);
   mytree->Branch("passPreFSRMInvCut",&passPreFSRMInvCut);
   mytree->Branch("passMInvCut",      &passMInvCut);
+  mytree->Branch("passST1MInvCut",&passST1MInvCut);
+  mytree->Branch("passST23MInvCut",&passST23MInvCut);
+  mytree->Branch("passHSMInvCut",&passHSMInvCut);
   //=============================================================
   //
   //           Create Branchs for Muons variables
@@ -1442,13 +1451,22 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
   xsWeight = -1.;
   passPreFSRMInvCut = false;
   passMInvCut       = false;
+  passST1MInvCut    = false;
+  passST23MInvCut   = false;
+  passHSMInvCut     = false;
 
   edm::Handle<bool>   h_passMInvCut;
   edm::Handle<bool>   h_passPreFSRMInvCut;
+  edm::Handle<bool>   h_passST1MInvCut;
+  edm::Handle<bool>   h_passST23MInvCut;
+  edm::Handle<bool>   h_passHSMInvCut;
   edm::Handle<double> h_xsWeight;
 
   iEvent.getByToken(m_passMInvCutToken,       h_passMInvCut);
   iEvent.getByToken(m_passPreFSRMInvCutToken, h_passPreFSRMInvCut);
+  iEvent.getByToken(m_passST1MInvCutToken,    h_passST1MInvCut);
+  iEvent.getByToken(m_passST23MInvCutToken,   h_passST23MInvCut);
+  iEvent.getByToken(m_passHSMInvCutToken,     h_passHSMInvCut);
   iEvent.getByToken(m_xsWeightToken,          h_xsWeight);
 
   if (h_xsWeight.isValid()) {
@@ -1467,6 +1485,33 @@ void MakeZprimeMiniAodTreeMC::accessGenInfo(const edm::Event& iEvent,const edm::
   } else {
     edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
       << "invalid handle to passPreFSRMInvCut";
+  }
+
+  if (h_passST1MInvCut.isValid()) {
+    passST1MInvCut = *h_passST1MInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passST1MInvCut::" << *h_passST1MInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passST1MInvCut";
+  }
+
+  if (h_passST23MInvCut.isValid()) {
+    passST23MInvCut = *h_passST23MInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passST23MInvCut::" << *h_passST23MInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passST23MInvCut";
+  }
+
+  if (h_passHSMInvCut.isValid()) {
+    passHSMInvCut = *h_passHSMInvCut;
+    edm::LogInfo("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "passHSMInvCut::" << *h_passHSMInvCut;
+  } else {
+    edm::LogWarning("MakeZprimeMiniAodTreeMC::accessGenInfo")
+      << "invalid handle to passHSMInvCut";
   }
 
   if (h_passMInvCut.isValid()) {

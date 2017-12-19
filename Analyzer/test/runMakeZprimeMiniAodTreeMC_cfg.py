@@ -141,10 +141,12 @@ with open("%s/src/ZprimeDiLeptons/Analyzer/python/wsuciutils/xsec-tools/data/ci_
     #}
     # sample = options.sampleType.split('_')
     if "DY" in sample[0]:
-        xsdict = sdict[args.xsdict]
+        print(sample)
+        mass   = sample[1][1:]
+        xsdict = sdict[sample[0]]["M%s"%(mass)]
         if not options.runCrab:
             infiles = cisamples[sample[0]]["M{}".format(mass)] ## this should be com
-        outfile = '{}_M{}_MC_ntuple.root'.format(lval,mass)
+        outfile = '{}_M{}_MC_ntuple.root'.format(sample[0],mass)
     elif "CI" in sample[0]:
         special = sample[3].split("TeV")
         lval   = special[0]
@@ -189,13 +191,16 @@ process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
 #it creates a sequence "process.heepSequence" which we add to our path
 from WSUDiLeptons.GenLevelFilter.genLevelFilter_cfi import genLevelFilter
 process.genweightfilter = genLevelFilter.clone(
-    filterevent  = cms.bool(False),
-    filterPreFSR = cms.bool(False),
-    debug        = cms.bool(False),
-    minCut       = cms.double(lowerCut),
-    sampleType   = cms.string(sample[0]),
-    maxCut       = cms.double(upperCut),
-    xsWeight     = cms.double(weight),
+    filterevent   = cms.bool(False),
+    filterPreFSR  = cms.bool(False),
+    filterST1     = cms.bool(False),
+    filterST23    = cms.bool(False),
+    filterHS      = cms.bool(False),
+    debug         = cms.bool(False),
+    minCut        = cms.double(lowerCut),
+    sampleType    = cms.string(sample[0]),
+    maxCut        = cms.double(upperCut),
+    xsWeight      = cms.double(weight),
 )
 
 from HEEP.VID.tools import addHEEPV70ElesMiniAOD
@@ -209,6 +214,9 @@ process.heepIdExample = cms.EDAnalyzer("MakeZprimeMiniAodTreeMC",
     eles=cms.InputTag("slimmedElectrons"),
     passMInvCutTag       = cms.InputTag("genweightfilter","passMassCut"),
     passPreFSRMInvCutTag = cms.InputTag("genweightfilter","passPreFSRMassCut"),
+    passST1MInvCutTag    = cms.InputTag("genweightfilter","passST1MassCut"),
+    passST23MInvCutTag   = cms.InputTag("genweightfilter","passST23MassCut"),
+    passHSMInvCutTag =    cms.InputTag("genweightfilter","passHSMassCut"),
     xsWeightTag          = cms.InputTag("genweightfilter","xsWeight"),
     scProducer = cms.InputTag("reducedEgamma:reducedSuperClusters"),
     vertices   = cms.InputTag("offlineSlimmedPrimaryVertices"),
