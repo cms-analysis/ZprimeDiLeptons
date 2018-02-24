@@ -59,4 +59,13 @@ echo git clone git@github.com:cms-data/RecoEgamma-ElectronIdentification ../exte
 echo git clone -b HEEPV70 git@github.com:Sam-Harper/HEEP.git
 echo git cms-merge-topic Sam-Harper:NewEGModifiers_8010
 # the zprime selection code
-echo git clone https://github.com/cms-analysis/ZprimeDiLeptons
+echo git clone -b generic-80x git@github.com:jsturdy/wsu-dilepton-analysis.git WSUDiLeptons
+echo "#or git clone -b generic-80x https://github.com/jsturdy/wsu-dilepton-analysis WSUDiLeptons"
+echo git clone -b release-80x git@github.com:cms-analysis/ZprimeDiLeptons.git
+echo "#or git clone https://github.com/cms-analysis/ZprimeDiLeptons"
+
+echo cd ZprimeDiLeptons
+echo git submodule init 
+echo git submodule update
+echo cd '$CMSSW_BASE/src'
+echo scram b -j8
